@@ -2,7 +2,7 @@
 
 INTEGRATE-Vis is a gene fusion visualization tool. It is written in Python.
 
-### Requirements
+### prerequisites
 
 Please make sure you have installed the following tools:
 
