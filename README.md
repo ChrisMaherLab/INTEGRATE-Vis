@@ -51,13 +51,13 @@ You can run the following commands:
     Integrate-vis exon-exp  <parameters>
     Integrate-vis gene-exp  <parameters>
 
-E.g. run
+For example, you can run
 ```sh
 Integrate-vis structure --help
 ```
 to see what input values or files are needed for the structure util.
 
-Input file formats includes BEDPE, BAM, GTF, and TSV.
+Input file formats include BEDPE, BAM, GTF, and TSV.
 
 The BEDPE format for gene fusions follows the standardized format provided by The ICGC-TCGA DREAM Somatic Mutation Calling - RNA Challenge ([SMC-RNA](http://dreamchallenges.org/)).
 
