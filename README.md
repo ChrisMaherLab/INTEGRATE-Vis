@@ -102,14 +102,13 @@ pd_fusion_converter.py -r Homo_sapiens.GRCh38.85.fa -g Homo_sapiens.GRCh38.85.gt
 pd_expression_converter.py -a COHORT_NAME.expression.files.dir.tsv -g 1 -e 7 -o OUTPUT_DIR -c COHORT_NAME
 ```
 
-The above commands generate COHORT_NAME.fusions.tsv and COHORT_NAME.gene_expression.tsv under OUTPUT_DIR.
-
+The above commands generate COHORT_NAME.fusions.tsv and COHORT_NAME.gene_expression.tsv under OUTPUT_DIR.The -g and -e options for the pd_expression_converter.py script are the column numbers for gene IDs and expression values. You can change these values according to the gene expression calculation tools you used. 
 
 b. running the gene-exp util:
 ```sh
 Integrate-vis.py gene-exp -f OUTPUT_DIR/COHORT_NAME.fusions.tsv -e OUTPUT_DIR/COHORT_NAME.gene_expression.tsv -t COHORT_NAME.type.tsv -g Homo_sapiens.GRCh38.85.gtf -m "Read count" -c COHORT_NAME -o OUTPUT_DIR -k
 ```
 
-The input files COHORT_NAME.fusion.bedpe.dir.tsv, COHORT_NAME.expression.files.dir.tsv, COHORT_NAME.type.tsv are for the directories of the BEDPE files, the directories of the gene expression files (Can be from any tool), and the sample types. Examples of these files can be found under data/ dir.
+The input files COHORT_NAME.fusion.bedpe.dir.tsv, COHORT_NAME.expression.files.dir.tsv, COHORT_NAME.type.tsv are for the directories of the BEDPE files, the directories of the gene expression files (Can be from any tool), and the sample types. Examples of these files can be found under data/ directory.You can change the -m option if the gene expression calcuation tool you used report other values, e.g. FPKM. 
 
 ### Enjoy!
