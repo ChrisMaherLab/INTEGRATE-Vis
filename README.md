@@ -75,7 +75,7 @@ Domain_table.tsv can be created by the python script domain_table.prep.py under 
 
 Both ideogram.hg38.tsv and domain.table.tsv have also been included under the data/ directory.
 
-### output
+### Output
 
 Output files are figures in PDF format.
 
