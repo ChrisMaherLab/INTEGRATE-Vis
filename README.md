@@ -31,7 +31,7 @@ Note that you can choose wherever you like to install the software. It can be di
 
 ### Input
 
-If you type the following commands, you will see the usages for 4 sub utils and explanations, which are for the 4 types of figures that INTEGRATE-Vis plots. The utils includes: structure, domain, exon expression, and gene expression in a cohort.
+If you type the following commands, you will see the usages for 4 sub utils and explanations, which are for the 4 types of figures that INTEGRATE-Vis plots. The utils include: structure, domain, exon expression, and gene expression in a cohort.
 ```sh
 $ ./Integrate-Vis.py --help
 ```
