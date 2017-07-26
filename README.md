@@ -31,8 +31,7 @@ Note that you can choose wherever you like to install the software. It can be di
 
 ### Input
 
-If you type the following:
-
+If you type the following commands, you will see the usages for 4 sub utils and explanations, which are for the 4 types of figures that INTEGRATE-Vis plots. The utils includes: structure, domain, exon expression, and gene expression in a cohort.
 ```sh
 $ ./Integrate-Vis.py --help
 ```
@@ -41,21 +40,18 @@ or
 ```sh
 python ./Integrate-vis.py --help
 ```
-
-you will see the usages for 4 sub utils and explanations, which are for the 4 types of figures that INTEGRATE-Vis plots. The utils includes: structure, domain, exon expression, and gene expression in a cohort.
-
-You can run the following commands:
+The following commands are for the 4 utils, respectively.
 
     Integrate-vis structure <parameters>
     Integrate-vis domain    <parameters>
     Integrate-vis exon-exp  <parameters>
     Integrate-vis gene-exp  <parameters>
 
-For example, you can run
+For example, you can run the following comman to see what input values or files are needed for the structure util.
+
 ```sh
 Integrate-vis structure --help
 ```
-to see what input values or files are needed for the structure util.
 
 Input file formats include BEDPE, BAM, GTF, and TSV.
 
@@ -75,9 +71,9 @@ ideo <- getIdeo("hg38")
 write.table(ideo,"Desktop/ideogram.hg38.tsv", sep="\t", quote=F, row.names = F)
 ```
 
-Domain_table.tsv can be created by the python script domain_table.prep.py under the src/ dir.
+Domain_table.tsv can be created by the python script domain_table.prep.py under the src/ directory.
 
-Both ideogram.hg38.tsv and domain.table.tsv have also been included under the data/ dir.
+Both ideogram.hg38.tsv and domain.table.tsv have also been included under the data/ directory.
 
 ### output
 
@@ -85,7 +81,7 @@ Output files are figures in PDF format.
 
 ### Important
 
-The chromosome names in the reference genome, the gene models, and the fusions should be consistent.
+The chromosome names in the reference genome, the gene models, and the fusion bedpe files should be consistent.
 
 ### Example command lines:
 
