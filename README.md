@@ -6,13 +6,14 @@ INTEGRATE-Vis is a gene fusion visualization tool. It is written in Python.
 
 Please make sure you have installed the following tools:
 
-  - Python
-  - CMake
-  - GCC
-  - EPDFree https://www.enthought.com/products/epd/
-  - gtfToGenePred http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred
+  - [Python](https://www.python.org/)
+  - [CMake](https://cmake.org/)
+  - [GCC](https://gcc.gnu.org/)
+  - [Matplotlib](http://matplotlib.org/)
+  - [gtfToGenePred] (http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred)
 
 If not, please install these languages or tools.
+Note: Matplotlib can also be installed through using [EPDFree](https://www.enthought.com/products/epd/)
 
 ### Installation
 
