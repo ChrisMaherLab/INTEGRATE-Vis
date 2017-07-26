@@ -13,7 +13,7 @@ Please make sure you have installed the following tools:
   - [gtfToGenePred](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred)
 
 If not, please install these languages or tools.
-Note: Matplotlib can also be installed through using [EPDFree](https://www.enthought.com/products/epd/)
+Note: Matplotlib can also be installed through using [EPDFree](https://www.enthought.com/products/epd/).
 
 ### Installation
 
