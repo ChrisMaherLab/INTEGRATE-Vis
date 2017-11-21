@@ -71,7 +71,7 @@ For example, you can run the following command to see what input values or files
 ```sh
 $ python ~/opt/bin/Integrate-vis.py structure --help
 ```
-![Input for the structure util](https://github.com/ChrisMaherLab/INTEGRATE-Vis/common/image/structure.input.png)
+![Input for the structure util](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/common/image/structure.input.png)
 
 Screenshots for inputs to other utils are not included here to save space. Please run the above commands yourself.
 
