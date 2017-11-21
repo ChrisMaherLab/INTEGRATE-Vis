@@ -224,7 +224,7 @@ $ python ~/opt/bin/pd_fusion_converter.py -r ~/INTEGRATE-Vis-master/INTEGRATE-Vi
 ```
 _./all.fusion.bedpe.dir.tsv_ can be downloaded from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/all.fusion.bedpe.dir.tsv). It contains sample names and paths to the bedpe files for the 333 TCGA PRAD samples, discovered by [INTEGRATE](https://sourceforge.net/projects/integrate-fusion/). Change the paths if you saved the [bedpe files](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/TCGA_PRAD_333_bedpe/) to a different directory. _GRCh38\_r85.all.fa_ and _Homo\_sapiens.GRCh38.85.gtf_ can be downloaded and created as shown above in **Input**.
 
-The command generates a matrix in ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelD/cohort.fusions.tsv. It can also be downloaed from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/panelD/cohort.fusions.tsv). Instead of using the file all.fusion.bedpe.dir.tsv, you can also provide the sample names and paths as comma separated parameters (type python ~/opt/bin/pd_fusion_converter.py \-\-help for details.) 
+The command generates a matrix in ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelD/cohort.fusions.tsv. It can also be downloaded from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/panelD/cohort.fusions.tsv). Instead of using the file all.fusion.bedpe.dir.tsv, you can also provide the sample names and paths as comma separated parameters (type python ~/opt/bin/pd_fusion_converter.py \-\-help for details.) 
 
 _cohort.fusions.tsv_ contains info for all the gene fusions in the cohort to plot (D) gene expression figures for all the gene fusions. Depending on your research interest, you may only need to focus on certain genes instead of all gene fusions from a cohort. In this example, we focus on ERG gene fusions, by running: 
 
@@ -243,13 +243,13 @@ $ python ~/opt/bin/pd_expression_converter.py -a ./all.exp.dir.tsv -g 1 -e 7 -o 
 
 _./all.exp.dir.tsv_ can be downloaded from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/all.exp.dir.tsv). It contains sample names and paths to the FeatureCounts TSV files for the 333 TCGA PRAD samples. Change the paths if you saved the [TSV files](https://github.com/ChrisMaherLab/INTEGRATE-Vis/tree/master/example/Example1/TCGA_PRAD_333_FeatureCounts_tsv/) to a different directory. Note that these files uploaded to GitHub here only contain a subset of all genes, but not all Ensembl genes, to make this testing example compact and work with the _cohort.ERG.tsv_ file. Otherwise, TSV files for all the genes for the cohort take about 7GB of space.
 
-The command generates a matrix in ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelD/cohort.gene_expression.tsv. It can also be downloaed from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/panelD/cohort.gene_expression.tsv). Instead of using the file all.exp.dir.tsv, you can also provide the sample names and paths as comma separated parameters (type python ~/opt/bin/pd_expression_converter.py \-\-help for details.)
+The command generates a matrix in ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelD/cohort.gene_expression.tsv. It can also be downloaded from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/panelD/cohort.gene_expression.tsv). Instead of using the file all.exp.dir.tsv, you can also provide the sample names and paths as comma separated parameters (type python ~/opt/bin/pd_expression_converter.py \-\-help for details.)
 
 Instead of using FeatureCounts, you can also use other tools to calculate read counts or normalized expression. For example, if cufflinks was used, change the paramters to -g 1 and -e 10 for FPKM values (Also the -m option to FPKM for _Integrate-vis.py gene-exp_ below). You can also download gene expression data from databases, e.g., [cBioPortal](http://www.cbioportal.org/).
 
 Create cohort.type.tsv:
 
-_cohort.type.tsv_ contails one column of sample names and one column of 0/1 values indicating whether the sample is tumor or not. It can be downloaed [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/panelD/cohort.type.tsv) for the 333 TCGA PRAD samples. 
+_cohort.type.tsv_ contails one column of sample names and one column of 0/1 values indicating whether the sample is tumor or not. It can be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/panelD/cohort.type.tsv) for the 333 TCGA PRAD samples. 
 
 (2)\ PDF Generation:
 
