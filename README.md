@@ -214,7 +214,7 @@ After running the command, you can find the PDF files for C (exon expression) un
 
 *D. Gene Expression*
 
-(1)\ Preparation:
+(1)Preparation:
 
 Create cohort.fusions.tsv:
 
@@ -251,7 +251,7 @@ Create cohort.type.tsv:
 
 _cohort.type.tsv_ contails one column of sample names and one column of 0/1 values indicating whether the sample is tumor or not. It can be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/panelD/cohort.type.tsv) for the 333 TCGA PRAD samples. 
 
-(2)\ PDF Generation:
+(2)PDF Generation:
 
 ```sh
 $ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/
