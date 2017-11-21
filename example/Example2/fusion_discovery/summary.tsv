@@ -1,0 +1,28 @@
+Fusion_Candidate	5_Prime	3_Prime	Reciprocal	Tier	Type	EN_RNA	SP_RNA	Splicings
+1	RAE1	SVIP	N	3	Inter_Chromosomal	598	598	RAE1>>SVIP(Inter_Chromosomal Canonical 598);
+2	KIAA0922	BAG3	N	3	Inter_Chromosomal	284	317	KIAA0922>>BAG3(Inter_Chromosomal Canonical 317);
+3	PHF23	RNF217	N	3	Inter_Chromosomal	102	79	PHF23>>RNF217(Inter_Chromosomal Canonical 79);
+4	SEMA4F	MBD4	N	3	Inter_Chromosomal	37	24	SEMA4F>>MBD4(Inter_Chromosomal Canonical 9);SEMA4F>>MBD4(Inter_Chromosomal Canonical 15);
+5	MSR1	TIMM8B	N	3	Inter_Chromosomal	22	15	MSR1>>TIMM8B(Inter_Chromosomal Canonical 15);
+6	CDHR4	C19orf40	N	3	Inter_Chromosomal	17	15	CDHR4>>C19orf40(Inter_Chromosomal Canonical 15);
+7	DMRTA1	CTLA4	N	3	Inter_Chromosomal	13	8	DMRTA1>>CTLA4(Inter_Chromosomal Canonical 8);
+8	RP11-497E19.2	ARHGAP39	N	3	Inter_Chromosomal	5	12	RP11-497E19.2>>ARHGAP39(Inter_Chromosomal Canonical 12);
+9	CRP	NNAT	N	3	Inter_Chromosomal	4	11	CRP>>NNAT(Inter_Chromosomal Canonical 11);
+10	FLT1	APBB1IP	N	3	Inter_Chromosomal	7	8	FLT1>>APBB1IP(Inter_Chromosomal Canonical 8);
+11	ACVR2B	YPEL5	N	3	Inter_Chromosomal	9	5	ACVR2B>>YPEL5(Inter_Chromosomal Canonical 5);
+12	ENKD1	PTGS1	N	3	Inter_Chromosomal	6	5	ENKD1>>PTGS1(Inter_Chromosomal Canonical 5);
+13	N4BP2L2	WRNIP1	N	3	Inter_Chromosomal	3	8	N4BP2L2>>WRNIP1(Inter_Chromosomal Canonical 8);
+14	PRMT5	SLC25A6	N	3	Inter_Chromosomal	2	6	PRMT5>>SLC25A6(Inter_Chromosomal Canonical 6);
+15	OVOL1	PREP	N	3	Inter_Chromosomal	3	4	OVOL1>>PREP(Inter_Chromosomal Canonical 4);
+16	MMADHC	RHBDD2	N	3	Inter_Chromosomal	3	3	MMADHC>>RHBDD2(Inter_Chromosomal Canonical 3);
+17	ATP2B4	USH1G	N	3	Inter_Chromosomal	3	1	ATP2B4>>USH1G(Inter_Chromosomal Canonical 1);
+18	GPR18	PEX1	N	3	Inter_Chromosomal	1	3	GPR18>>PEX1(Inter_Chromosomal Canonical 3);
+19	HPS3	GTDC1	N	3	Inter_Chromosomal	2	2	HPS3>>GTDC1(Inter_Chromosomal Canonical 2);
+20	PRKD1	RSPH10B2	N	3	Inter_Chromosomal	3	1	PRKD1>>RSPH10B2(Inter_Chromosomal Canonical 1);
+21	S100A16	BOD1L1	N	3	Inter_Chromosomal	2	2	S100A16>>BOD1L1(Inter_Chromosomal Canonical 2);
+22	TMEM56/TMEM56-RWDD3	CCPG1/DYX1C1-CCPG1	N	3	Inter_Chromosomal	3	1	TMEM56/TMEM56-RWDD3>>CCPG1/DYX1C1-CCPG1(Inter_Chromosomal Canonical 1);
+23	GABRA1	C5orf27	N	3	Intra_Chromosomal	33	50	GABRA1>>C5orf27(Intra_Chromosomal Canonical 13);GABRA1>>C5orf27(Intra_Chromosomal Canonical 37);
+24	FAM209B	LAMA5	N	3	Intra_Chromosomal	25	40	FAM209B>>LAMA5(Intra_Chromosomal Canonical 40);
+25	CCDC28A	GPR115	N	3	Intra_Chromosomal	1	2	CCDC28A>>GPR115(Intra_Chromosomal Canonical 2);
+26	C19orf59	CRYM	N	6	Inter_Chromosomal	1	5	C19orf59>>CRYM(Inter_Chromosomal 5);
+27	FIP1L1	PDGFRA	N	6	Intra_Chromosomal	8	7	FIP1L1>>PDGFRA(Intra_Chromosomal 4);FIP1L1>>PDGFRA(Intra_Chromosomal 3);

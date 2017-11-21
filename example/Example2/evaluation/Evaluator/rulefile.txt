@@ -1,0 +1,5 @@
+No Subsetting	1==1
+Inter	$1!=$4
+Intra	$1==$4
+Intra and Distance>=5M	{a=0;b=0;}{if($9=="+") a=$3; else a=$2+1;}{if($10=="+") b=$5+1; else b=$6} $1==$4 && (b-a<=-5000000 || b-a>=5000000)
+Intra and Distance<5M	{a=0;b=0;}{if($9=="+") a=$3; else a=$2+1;}{if($10=="+") b=$5+1; else b=$6} $1==$4 && !(b-a<=-5000000 || b-a>=5000000)

@@ -1,3 +1,0 @@
-No headers are needed.
-
-For COHORT_NAME.type.txt, the second colomn: 1 means a tumor sample, 0 means a normal sample

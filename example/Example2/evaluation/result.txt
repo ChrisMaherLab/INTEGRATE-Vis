@@ -1,0 +1,4 @@
+#fusionToolEvaluator version 0.1.4
+#--gene-annotation-file=../../../INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh37.75.genePred; --base-resolution=1; --max-diff=20; --pseudo-counts=0,0,0,0,0,0
+#Evaluation_Name	Num_Res_Trans	Num_Truth_Trans	Sensitivity_Trans	Precision_Trans	F1_Trans	Num_Res_Gene	Num_Truth_Gene	Sensitivity_Gene	Precision_Gene	F1_Gene
+rule1	25	36	0.666667	0.96	0.786885	25	36	0.666667	0.96	0.786885

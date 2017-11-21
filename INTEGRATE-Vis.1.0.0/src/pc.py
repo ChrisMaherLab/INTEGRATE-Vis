@@ -38,11 +38,11 @@ def usage():
                                      [value:    ylim for both gene partners                                             ]
         -q/--x-5p-max                [Optional]
                                      [value:    xlim for 5p gene, rule over -x/--x-max                                  ]
-        -r/--x-5p-max                [Optional]
+        -r/--y-5p-max                [Optional]
                                      [value:    ylim for 5p gene, rule over -y/--y-max                                  ]
         -s/--x-3p-max                [Optional]
                                      [value:    xlim for 3p gene, rule over -x/--x-max                                  ]
-        -t/--x-3p-max                [Optional]
+        -t/--y-3p-max                [Optional]
                                      [value:    ylim for 3p gene, rule over -y/--y-max                                  ]
         -u/--same-y                  [Optional]
                                      [          after the abovoe -max options, set y the same                           ]
@@ -73,7 +73,7 @@ class PANEL_C:
     trans_ID_5 = 'None'
     trans_ID_3 = 'None'
     TR_frames = ''
-    
+
     in_frame_TRs_5 = []
     in_frame_TRs_3 = []
     out_frame_TRs_3 = []
@@ -205,19 +205,25 @@ class PANEL_C:
     def find_best_transcript(self, gene_ID, strand, side):
         #description = subprocess.check_output("grep %s %s | awk '$3 == \"transcript\"' | cut -f4,5,9" % (gene_ID, self.gene_model_directory), shell = True).rstrip('\n').split('\n')
         description = subprocess.check_output("grep %s %s | awk '$3 == \"transcript\"' | cut -f4,5,9" % (gene_ID, self.gene_model_dir_2), shell = True).rstrip('\n').split('\n')
-        description[:] = [re.split('; |\t', x) for x in description]
-        for transcript in description:
-            transcript[:] = [x.split(' ') for x in transcript]
+        description[:] = [transcript.split('\t') for transcript in description]
+        description = [[transcript[0], transcript[1], dict([info.replace('"', '').split(' ') for info in transcript[2].rstrip(';').split('; ')])] for transcript in description]
 
-        TR_ID_list = [transcript[4][1][1:-1] for transcript in description]
+        TR_ID_list = [transcript[2]['transcript_id'] for transcript in description]
 
         min_dist_from_fusion = []
         length = []
-        biotype = [transcript[13][1][1:-1] for transcript in description]
-        #tsl = [int(transcript[-1][1][1:-2]) for transcript in description]
-        tsl= [transcript[-1][1][1:-2] for transcript in description]
-        for i in range(len(tsl)):
-            tsl[i] = int(tsl[i]) if isinstance(tsl[i], (int, long)) else 6
+
+        biotype = [transcript[2]['gene_biotype'] for transcript in description]
+        tsl = []
+
+        for transcript in description:
+            if ('transcript_support_level' in transcript[2]):
+                if isinstance(transcript[2]['transcript_support_level'], (int, long)):
+                    tsl.append(int(transcript[2]['transcript_support_level']))
+                else:
+                    tsl.append(6)
+            else:
+                tsl.append(6)
 
         for ID in TR_ID_list:
             #exon_junctions = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f4,5" % (ID, self.gene_model_directory), shell = True).rstrip('\n').split('\n')
@@ -254,6 +260,7 @@ class PANEL_C:
         #self.exons_5 = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f1,4,5" % (self.TR_5, self.gene_model_directory), shell = True).rstrip("\n").split("\n")
         self.exons_3 = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f1,4,5" % (self.TR_3, self.gene_model_dir_2), shell = True).rstrip("\n").split("\n")
         self.exons_5 = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f1,4,5" % (self.TR_5, self.gene_model_dir_2), shell = True).rstrip("\n").split("\n")
+
         for i in range(0,len(self.exons_3)):
             self.exons_3[i] = self.exons_3[i].split("\t")
 
@@ -268,8 +275,9 @@ class PANEL_C:
         #print("\n" + "detected exons for " + self.gene_name_5 + ":" + '\n')
         #print(self.exons_5)
 
-        self.ch_3 = int(self.exons_3[0][0])
-        self.ch_5 = int(self.exons_5[0][0])
+        #not cast to int
+        self.ch_3 = self.exons_3[0][0]
+        self.ch_5 = self.exons_5[0][0]
         self.start_3 = int(self.exons_3[0][1])
         self.end_3 = int(self.exons_3[-1][2])
         self.start_5 = int(self.exons_5[0][1])
@@ -288,25 +296,31 @@ class PANEL_C:
         # if not os.isfile("%s.bam" % (gene_name_5)):
         subprocess.call("samtools view -b %s %s:%s-%s > %s.bam" % (self.bam_file_directory, self.ch_5, self.start_5, self.end_5, self.gene_name_5), shell = True)
 
-        self.reads_3 = subprocess.check_output("bedtools genomecov -ibam %s.bam -bga" % (self.gene_name_3), shell = True).rstrip('\n').split('\n')
-        self.reads_5 = subprocess.check_output("bedtools genomecov -ibam %s.bam -bga" % (self.gene_name_5), shell = True).rstrip('\n').split('\n')
+        self.reads_3 = subprocess.check_output("bedtools genomecov -ibam %s.bam -bga" % (self.gene_name_3), shell = True)
+        self.reads_5 = subprocess.check_output("bedtools genomecov -ibam %s.bam -bga" % (self.gene_name_5), shell = True)
 
-        self.reads_3[:] = [read.split("\t") for read in self.reads_3]
+        if self.reads_3: self.reads_3 = [read.split("\t") for read in self.reads_3.rstrip('\n').split('\n')]
+        if self.reads_5: self.reads_5 = [read.split("\t") for read in self.reads_5.rstrip('\n').split('\n')]
 
-        self.reads_5[:] = [read.split("\t") for read in self.reads_5]
+        self.read_coords_3 = [0] * (self.end_3 - self.start_3 + 1)
+        self.read_coords_5 = [0] * (self.end_5 - self.start_5 + 1)
 
         # read_coords contain intron
-        for read in self.reads_3:
-            length = min(self.end_3, int(read[2])) - max(self.start_3, int(read[1]))
-            if length > 0:
-                counts = [int(read[3])] * length
-                self.read_coords_3.extend(counts)
+        if self.reads_3:
+            for read in self.reads_3:
+                count_start = max(self.start_3, int(read[1]))
+                count_end = min(self.end_3, int(read[2]))
+                count = int(read[3])
+                for i in range(count_start - self.start_3, count_end - self.start_3 + 1):
+                    self.read_coords_3[i] = count
 
-        for read in self.reads_5:
-            length = min(self.end_5, int(read[2])) - max(self.start_5, int(read[1]))
-            if length > 0:
-                counts = [int(read[3])] * length
-                self.read_coords_5.extend(counts)
+        if self.reads_5:
+            for read in self.reads_5:
+                count_start = max(self.start_5, int(read[1]))
+                count_end = min(self.end_5, int(read[2]))
+                count = int(read[3])
+                for i in range(count_start - self.start_5, count_end - self.start_5 + 1):
+                    self.read_coords_5[i] = count
 
     def get_graph_coords(self):
         if self.coverage_mode == 'g': # make sure to highlight exons, optionally, shrink length of intron (not important for now)
@@ -358,6 +372,7 @@ class PANEL_C:
         #print("fusion point on the graph: ", self.graph_fusion_5)
 
     def draw(self):
+        #pdb.set_trace()
         #tt=time.time()
         plt.rcParams["figure.figsize"] = self.fig_size
         fig = plt.figure()
@@ -373,13 +388,13 @@ class PANEL_C:
         if self.m_yy>0:
             m_y_3=self.m_yy
             m_y_5=self.m_yy
-        
+
         if self.m_xx_3>0:
             m_x_3=self.m_xx_3
         if self.m_yy_3>0:
             m_y_3=self.m_yy_3
         if self.m_xx_5>0:
-            m_x_5=self.m_xx_5  
+            m_x_5=self.m_xx_5
         if self.m_xx_5>0:
             m_y_5=self.m_yy_5
         if self.is_same_y==True:
@@ -403,7 +418,7 @@ class PANEL_C:
                     pp=0
                 if pp>(len(self.x_3)-1):
                     pp=len(self.x_3)-1
-                ymax=(self.y_3[pp]+m_y_3*0.05)/(m_y_3*1.1)
+                ymax=(self.y_3[pp]+m_y_3*0.05)/(m_y_3*1.1) if m_y_3 != 0 else 0
                 #ymin=0.05/1.1
                 ymin=0
                 plt.axvline(x=xc, c = 'blue', ls = '-', lw = 0.4, alpha=1, ymin=ymin, ymax=ymax)
@@ -431,7 +446,7 @@ class PANEL_C:
                     pp=0
                 if pp>(len(self.x_5)-1):
                     pp=len(self.x_5)-1
-                ymax=(self.y_5[pp]+m_y_5*0.05)/(m_y_5*1.1)
+                ymax=(self.y_5[pp]+m_y_5*0.05)/(m_y_5*1.1) if m_y_5 != 0 else 0
                 #ymin=0.05/1.1
                 ymin=0
                 plt.axvline(x=xc, c = 'blue', ls = '-', lw = 0.4, alpha=1, ymin=ymin, ymax=ymax)

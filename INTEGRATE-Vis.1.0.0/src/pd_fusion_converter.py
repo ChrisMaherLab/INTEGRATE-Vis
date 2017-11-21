@@ -110,7 +110,7 @@ def getParameters(argv):
 
 def make_dir(path):
     if not os.path.exists(path):
-        os.mkdir( path, 0755 )
+        os.mkdir( path, 0775 )
 
 def remove_tmp():
     if is_rm_tmp:
@@ -141,6 +141,11 @@ def make_annot_one(sample_name, fusion_bedpe):
     p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
     output = p.stdout.read()
     #print output
+
+    if not os.path.exists(bedpeAnnot):
+        cmd = 'touch '+ bedpeAnnot
+        Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+
     return
 
 def rm_quoat(aa):

@@ -13,102 +13,437 @@ Please make sure you have installed the following tools:
   - [gtfToGenePred](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred)
 
 If not, please install these languages or tools.
-Note: Matplotlib can also be installed through using [EPDFree](https://www.enthought.com/products/epd/).
+Note: Matplotlib can also be installed through using [EPDFree](https://www.enthought.com/products/epd/) or [Anaconda](https://www.anaconda.com/download/).
 
 ### Installation
 
-Download INTEGRATE-Vis at https://github.com/ChrisMaherLab/INTEGRATE-Vis.
+Download INTEGRATE-Vis at [https://github.com/ChrisMaherLab/INTEGRATE-Vis](https://github.com/ChrisMaherLab/INTEGRATE-Vis).
 
-Run the installation script:
+Here, we use ~/INTEGRATE-Vis-master/ as the directory to illustrate how to install and run INTEGRATE-Vis. Please choose other directories if your home directory is small. 
+
+Run the installation script (Suppose you have copied INTEGRATE-Vis-master.zip to ~):
 
 ```sh
-$ cd INTEGRATE-Vis.1.0.0
+$ cd ~
+$ unzip INTEGRATE-Vis-master.zip
+$ cd ./INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0
 $ chmod +x install.sh
-$ ./install.sh -o /opt/bin/
+$ ./install.sh -o ~/opt/bin/
 ```
 
-Note that you can choose wherever you like to install the software. It can be different from "/opt/bin/".
+Note that you can choose wherever you like to install the software. It can be different from "~/opt/bin/".
+
+You can include the directory you installed INTEGRATE-Vis to your PATH by running:
+
+```sh
+$ export PATH=~/opt/bin/:$PATH
+```
+
+before running INTEGRATE-Vis.
+
+You can also do this by adding the previous command to your ~/.bashrc file. 
 
 ### Input
 
-If you type the following commands, you will see the usages for 4 sub utils and explanations, which are for the 4 types of figures that INTEGRATE-Vis plots. The utils include: structure, domain, exon expression, and gene expression in a cohort.
-```sh
-$ ./Integrate-Vis.py --help
-```
-or
+If you type the following commands, you will see the usage for 4 sub utils and explanations, which are for the 4 types of figures that INTEGRATE-Vis plots. The utils include: structure, domain, exon expression, and gene expression in a cohort.
 
 ```sh
-python ./Integrate-vis.py --help
+$ python ~/opt/bin/Integrate-vis.py --help
 ```
+
+or 
+
+```sh
+$ Integrate-vis.py --help
+```
+
 The following commands are for the 4 utils, respectively.
 
-    Integrate-vis structure <parameters>
-    Integrate-vis domain    <parameters>
-    Integrate-vis exon-exp  <parameters>
-    Integrate-vis gene-exp  <parameters>
-
-For example, you can run the following comman to see what input values or files are needed for the structure util.
-
 ```sh
-Integrate-vis structure --help
+$ Integrate-vis structure <parameters>
+$ Integrate-vis domain <parameters>
+$ Integrate-vis exon-exp <parameters>
+$ Integrate-vis gene-exp <parameters>
 ```
 
-Input file formats include BEDPE, BAM, GTF, and TSV.
+For example, you can run the following command to see what input values or files are needed for the structure util.
 
-The BEDPE format for gene fusions follows the standardized format provided by The ICGC-TCGA DREAM Somatic Mutation Calling - RNA Challenge ([SMC-RNA](http://dreamchallenges.org/)).
+```sh
+$ python ~/opt/bin/Integrate-vis.py structure --help
+```
+![Input for the structure util](https://github.com/ChrisMaherLab/INTEGRATE-Vis/common/image/structure.input.png)
 
-The GTF files can be downloaded from Ensembl:
+Screenshots for inputs to other utils are not included here to save space. Please run the above commands yourself.
+
+Input file formats for INTEGRATE-Vis include BEDPE, BAM, GTF, FASTA, and TSV.
+
+**1. The BEDPE format** for gene fusions follows the standardized [format](https://www.synapse.org/#!Synapse:syn2813589/wiki/401442) provided by The ICGC-TCGA DREAM Somatic Mutation Calling - RNA Challenge ([SMC-RNA](https://www.synapse.org/#!Synapse:syn2813589/wiki/401435)). The [INTEGRATE](https://sourceforge.net/projects/integrate-fusion/) gene fusion discovery tool supports and by default generates a file - fusions.bedpe. You can run INTEGRATE to discover gene fusions and provide this file to INTEGRATE-Vis to generate gene fusion visualizations. You can also choose to use other gene fusion discovery tools. Gene fusion discovery tools participated in the SMC-RNA challenge support this format. If you choose to use a gene fusion discovery tool that does not support this format, you can convert its output to this format, which should usually be fairly straighforward. Examples of files in this format are included here: [BEDPE files for TCGA PRAD data](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/) and [BEDPE files for SMC-RNA sim56 data](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/fusion_discovery/). A step-by-step example of discovering gene fusions and reporting them in this BEDPE format from using raw FASTQ reads of SMC-RNA sim56 data by running STAR2 and INTEGRATE v0.2.6 can be found below ([E2. SMC-RNA sim56 data][]).
+
+**2. BAM files** can be generated by RNA-seq read-alignemnt tools, e.g. STAR2, TOPHAT2, HISAT2, GSNAP, etc. Sample command lines of using STAR2 to align SMC-RNA sim56 data can be found below ([E2. SMC-RNA sim56 data][]).
+
+**3. The GTF files** can be downloaded from Ensembl:
 
 GRCh37, e.g., v75: ftp://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz
 
-GRCh38, e.g., v86: ftp://ftp.ensembl.org/pub/release-86/gtf/homo_sapiens/Homo_sapiens.GRCh38.86.gtf.gz
+GRCh38, e.g., v85: ftp://ftp.ensembl.org/pub/release-85/gtf/homo_sapiens/Homo_sapiens.GRCh38.85.gtf.gz
 
-Ideogram.tsv can be created by the following R commands:
+You can use wget or curl to download these files:
+
+Command lines for downloading GRCh37 v75:
 
 ```sh
-library(IdeoViz)
-ideo <- getIdeo("hg38")
-write.table(ideo,"Desktop/ideogram.hg38.tsv", sep="\t", quote=F, row.names = F)
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/
+$ wget ftp://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz
+$ gunzip Homo_sapiens.GRCh37.75.gtf.gz
 ```
 
-Domain_table.tsv can be created by the python script domain_table.prep.py under the src/ directory.
+Command lines for downloading GRCh38 v85:
 
-Both ideogram.hg38.tsv and domain.table.tsv have also been included under the data/ directory.
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/
+$ wget ftp://ftp.ensembl.org/pub/release-85/gtf/homo_sapiens/Homo_sapiens.GRCh38.85.gtf.gz
+$ gunzip Homo_sapiens.GRCh38.85.gtf.gz
+```
+
+**4. FASTA files** for reference genomes can be downloaded from Ensembl:
+
+GRCh37:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/
+$ wget ftp://ftp.ensembl.org/pub/release-75/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.75.dna.chromosome.{1..22}.fa.gz
+$ wget ftp://ftp.ensembl.org/pub/release-75/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.75.dna.chromosome.X.fa.gz
+$ wget ftp://ftp.ensembl.org/pub/release-75/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.75.dna.chromosome.Y.fa.gz
+$ wget ftp://ftp.ensembl.org/pub/release-75/fasta/homo_sapiens/dna/Homo_sapiens.GRCh37.75.dna.chromosome.MT.fa.gz
+$ gunzip -c Homo_sapiens.GRCh37.75.dna.chromosome.* > GRCh37_r75.all.fa
+```
+
+GRCh38:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/
+$ wget ftp://ftp.ensembl.org/pub/release-85/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.{1..22}.fa.gz
+$ wget ftp://ftp.ensembl.org/pub/release-85/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.X.fa.gz
+$ wget ftp://ftp.ensembl.org/pub/release-85/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.Y.fa.gz
+$ wget ftp://ftp.ensembl.org/pub/release-85/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.chromosome.MT.fa.gz
+$ gunzip -c Homo_sapiens.GRCh38.dna.chromosome.* > GRCh38_r85.all.fa
+```
+
+**5. TSV files** for ideogram and domain table:
+
+Ideogram.37.tsv and Ideogram.38.tsv are included here: [37](https://github.com/ChrisMaherLab/INTEGRATE-Vis/INTEGRATE-Vis.1.0.0/data/ideogram/Ideogram.37.tsv) and [38](https://github.com/ChrisMaherLab/INTEGRATE-Vis/INTEGRATE-Vis.1.0.0/data/ideogram/Ideogram.38.tsv).
+
+For example, Ideogram.38.tsv can be created by the following R commands:
+
+```sh
+> library(IdeoViz)
+> ideo <- getIdeo("hg38")
+> write.table(ideo,"~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/Ideogram.38.tsv", sep="\t", quote=F, row.names = F)
+```
+
+Domain_table.37.tsv and Domain_table.38.tsv are included here: [37](https://github.com/ChrisMaherLab/INTEGRATE-Vis/INTEGRATE-Vis.1.0.0/data/domain_table/Domain_table.37.tsv) and [38](https://github.com/ChrisMaherLab/INTEGRATE-Vis/INTEGRATE-Vis.1.0.0/data/domain_table/Domain_table.38.tsv).
+
+They can also be created by the python script domain_table.prep.py under the src/ directory, using the following commands:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/domain_table/
+$ python ~/opt/bin/Integrate-vis.py -version GRCh37 -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh37.75.gtf -out Domain_table.37.tsv
+```
+and
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/domain_table/
+$ python ~/opt/bin/Integrate-vis.py -version GRCh38 -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -out Domain_table.38.tsv
+```
 
 ### Output
 
-Output files are figures in PDF format.
+Output files are figures in PDF format. Refer to the examples below for details.  
 
 ### Important
 
 The chromosome names in the reference genome, the gene models, and the fusion bedpe files should be consistent.
 
-### Example command lines:
+### Examples
 
-Plotting structure, domain, and exon expression for single sample:
+#### E1. TCGA PRAD cohort
+
+This example shows how to generate visualizations when gene fusions have already been discovered and are stored using the BEDPE format above, which represents the primary goal of INTEGRATE-Vis. To see how to generate a BEDPE file for gene fusions using INTEGRATE from raw reads, please refer to example 2 ([E2. SMC-RNA sim56 data][]) below.
+
+BEDPE files for 333 TCGA PRAD samples can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/). Please refer to our previous [paper](https://academic.oup.com/bioinformatics/article/33/4/555/2623364) for details of these gene fusions and the methods used to discover them.
+
+This example is based on GRCh38.
+
+We use [TCGA-ZG-A8QZ-01.bedpe](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe) to illustrate how to generate visualizations for (A) structure, (B) domain, and (C) exon expression. For visualization for (D) gene expression in a cohort, all the 333 BEDPE files are used. 
+
+For (A) sturcture and (C) exon expressioin, we have to use a simulated BAM [simulated.TCGA-ZG-A8QZ-01.bam](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/simulated.TCGA-ZG-A8QZ-01.bam) to make the examples work here. You can also test with a real BAM for the sample from [GDC](https://portal.gdc.cancer.gov/) if you have access to raw data there.   
+
+Suppose you downloaded INTEGRATE-Vis, and unzipped it at ~/INTEGRATE-Vis-master/. Again, you can choose another directory, and run the following commands with the directory you choose. 
+
+*A. Structure*
 
 ```sh
-Integrate-vis.py structure -b SAMPLE_NAME.bedpe -s SAMPLE_NAME -d ideogram.hg38.txt -r Homo_sapiens.GRCh38.85.fa -g Homo_sapiens.GRCh38.85.gtf (-m SAMPLE_NAME.sort.bam) -o OUTPUT_DIR -k
-Integrate-vis.py domain -b SAMPLE_NAME.bedpe -s SAMPLE_NAME -d domain.table.txt -r Homo_sapiens.GRCh38.85.fa -g Homo_sapiens.GRCh38.85.gtf -o OUTPUT_DIR -k
-Integrate-vis.py exon-exp -b SAMPLE_NAME.bedpe -s SAMPLE_NAME -m SAMPLE_NAME.sort.bam -r Homo_sapiens.GRCh38.85.fa -g Homo_sapiens.GRCh38.85.gtf -o ./OUTPUT_DIR -k
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/
+$ python ~/opt/bin/Integrate-vis.py structure -b ~/INTEGRATE-Vis-master/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe -s TCGA-ZG-A8QZ-01 -d ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/ideogram/Ideogram.38.tsv -r ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh38_r85.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -m ~INTEGRATE-Vis/example/Example1/simulated.TCGA-ZG-A8QZ-01.bam -o ./panelA -k
 ```
 
-Plotting gene partner expression in cohort:
+_TCGA-ZG-A8QZ-01.bedpe_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe). _Ideogram.38.tsv_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/INTEGRATE-Vis.1.0.0/data/ideogram/Ideogram.38.tsv). _GRCh38\_r85.all.fa_ and _Homo\_sapiens.GRCh38.85.gtf_ can be downloaded and created as shown above in [Input][]. The simualted BAM for testing, _simulated.TCGA-ZG-A8QZ-01.bam_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/simulated.TCGA-ZG-A8QZ-01.bam).
 
-a. preperation steps to generate COHORT_NAME.fusions.tsv and COHORT_NAME.gene_expression.tsv (Only need to run once).
+After running the command, you can find the PDF files for (A) structure under ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelA/ for the fusions in [TCGA-ZG-A8QZ-01.bedpe](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe). These PDF files can also be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/panelA/).
+
+*B. Domain*
 
 ```sh
-pd_fusion_converter.py -r Homo_sapiens.GRCh38.85.fa -g Homo_sapiens.GRCh38.85.gtf -o OUTPUT_DIR -k -a COHORT_NAME.fusion.bedpe.dir.tsv -c COHORT_NAME
-pd_expression_converter.py -a COHORT_NAME.expression.files.dir.tsv -g 1 -e 7 -o OUTPUT_DIR -c COHORT_NAME
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/
+$ python ~/opt/bin/Integrate-vis.py domain -b ~/INTEGRATE-Vis-master/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe -s TCGA-ZG-A8QZ-01 -d ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/domain_table/Domain_table.38.tsv -r ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh38_r85.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -o ./panelB -k
 ```
 
-The above commands generate COHORT_NAME.fusions.tsv and COHORT_NAME.gene_expression.tsv under OUTPUT_DIR.The -g and -e options for the pd_expression_converter.py script are the column numbers for gene IDs and expression values. You can change these values according to the gene expression calculation tools you used. 
+_TCGA-ZG-A8QZ-01.bedpe_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe). _domain_table.38.tsv_ can be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/INTEGRATE-Vis.1.0.0/data/domain_table/Domain_table.38.tsv) or created as shown above in [Input][]. _GRCh38\_r85.all.fa_ and _Homo\_sapiens.GRCh38.85.gtf_ can be downloaded and created as shown above in [Input][].
 
-b. running the gene-exp util:
+After running the command, you can find the PDF files for (B) domain under ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelB/ for the fusions in [TCGA-ZG-A8QZ-01.bedpe](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe). These PDF files can also be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/panelB/)
+
+*C. Exon Expression*
+
 ```sh
-Integrate-vis.py gene-exp -f OUTPUT_DIR/COHORT_NAME.fusions.tsv -e OUTPUT_DIR/COHORT_NAME.gene_expression.tsv -t COHORT_NAME.type.tsv -g Homo_sapiens.GRCh38.85.gtf -m "Read count" -c COHORT_NAME -o OUTPUT_DIR -k
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/
+$ python ~/opt/bin/Integrate-vis.py exon-exp -b ~/INTEGRATE-Vis-master/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe -s TCGA-ZG-A8QZ-01 -m ~/INTEGRATE-Vis-master/example/Example1/simulated.TCGA-ZG-A8QZ-01.bam -r ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh38_r85.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -o ./panelC -k
 ```
 
-The input files COHORT_NAME.fusion.bedpe.dir.tsv, COHORT_NAME.expression.files.dir.tsv, COHORT_NAME.type.tsv are for the directories of the BEDPE files, the directories of the gene expression files (Can be from any tool), and the sample types. Examples of these files can be found under data/ directory.You can change the -m option if the gene expression calcuation tool you used report other values, e.g. FPKM. 
+_TCGA-ZG-A8QZ-01.bedpe_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe). _simulated.TCGA-ZG-A8QZ-01.bam_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/simulated.TCGA-ZG-A8QZ-01.bam). _GRCh38\_r85.all.fa_ and _Homo\_sapiens.GRCh38.85.gtf_ can be downloaded and created as shown above in [Input][].
+
+After running the command, you can find the PDF files for C (exon expression) under ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelC/ for the fusions in [TCGA-ZG-A8QZ-01.bedpe](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe). These PDF files can also be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/panelC/).
+
+*D. Gene Expression*
+
+(1)\ Preparation:
+
+Create cohort.fusions.tsv:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/
+$ python ~/opt/bin/pd_fusion_converter.py -r ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh38_r85.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -o ./panelD -k -a ./all.fusion.bedpe.dir.tsv
+```
+_./all.fusion.bedpe.dir.tsv_ can be downloaded from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/all.fusion.bedpe.dir.tsv). It contains sample names and paths to the bedpe files for the 333 TCGA PRAD samples, discovered by [INTEGRATE](https://sourceforge.net/projects/integrate-fusion/). Change the paths if you saved the [bedpe files](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/) to a different directory. _GRCh38\_r85.all.fa_ and _Homo\_sapiens.GRCh38.85.gtf_ can be downloaded and created as shown above in [Input][].
+
+The command generates a matrix in ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelD/cohort.fusions.tsv. It can also be downloaed from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/panelD/cohort.fusions.tsv). Instead of using the file all.fusion.bedpe.dir.tsv, you can also provide the sample names and paths as comma separated parameters (type python ~/opt/bin/pd_fusion_converter.py \-\-help for details.) 
+
+_cohort.fusions.tsv_ contains info for all the gene fusions in the cohort to plot (D) gene expression figures for all the gene fusions. Depending on your research interest, you may only need to focus on certain genes instead of all gene fusions from a cohort. In this example, we focus on ERG gene fusions, by running: 
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/
+$ head -1 ./panelD/cohort.fusions.tsv > ./panelD/cohort.ERG.tsv
+$ grep ERG ./panelD/cohort.fusions.tsv >> ./panelD/cohort.ERG.tsv
+```
+
+Create cohort.gene_expression.tsv:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/
+$ python ~/opt/bin/pd_expression_converter.py -a ./all.exp.dir.tsv -g 1 -e 7 -o ./panelD/
+```
+
+_./all.exp.dir.tsv_ can be downloaded from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/all.exp.dir.tsv). It contains sample names and paths to the FeatureCounts TSV files for the 333 TCGA PRAD samples. Change the paths if you saved the [TSV files](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_FeatureCounts_tsv/) to a different directory. Note that these files uploaded to GitHub here only contain a subset of all genes, but not all Ensembl genes, to make this testing example compact and work with the _cohort.ERG.tsv_ file. Otherwise, TSV files for all the genes for the cohort take about 7GB of space.
+
+The command generates a matrix in ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelD/cohort.gene_expression.tsv. It can also be downloaed from [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/panelD/cohort.gene_expression.tsv). Instead of using the file all.exp.dir.tsv, you can also provide the sample names and paths as comma separated parameters (type python ~/opt/bin/pd_expression_converter.py \-\-help for details.)
+
+Instead of using FeatureCounts, you can also use other tools to calculate read counts or normalized expression. For example, if cufflinks was used, change the paramters to -g 1 and -e 10 for FPKM values (Also the -m option to FPKM for _Integrate-vis.py gene-exp_ below). You can also download gene expression data from databases, e.g., [cBioPortal](http://www.cbioportal.org/).
+
+Create cohort.type.tsv:
+
+_cohort.type.tsv_ contails one column of sample names and one column of 0/1 values indicating whether the sample is tumor or not. It can be downloaed [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/panelD/cohort.type.tsv) for the 333 TCGA PRAD samples. 
+
+(2)\ PDF Generation:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/
+$ python ~/opt/bin/Integrate-vis.py gene-exp -f ./panelD/cohort.ERG.tsv -e ./panelD/cohort.gene_expression.tsv -t ./panelD/cohort.type.tsv -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -m "Read count" -c PRAD -o ./panelD -k
+```
+_Homo\_sapiens.GRCh38.85.gtf_ can be downloaded and created as shown above in [Input][].
+
+After running the command, you can find the PDF files for (D) gene expression under ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/panelD/ for all the ERG fusions in the TCGA PRAD cohort. These PDF files can also be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/panelD/).
+
+#### E2. SMC-RNA sim56 data
+
+**Download data**
+
+SMC-RNA sim56 data can be downloaded [here](https://console.cloud.google.com/storage/browser/dream-smc-rna/training). Click on sim56_mergeSort_1.fq.gz and sim56_mergeSort_2.fq.gz and save them to ~/INTEGRATE-Vis-master/example/Example2/sim56_data/. Then gunzip them: 
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/example/Example2/sim56_data/
+$ gunzip sim56_mergeSort_1.fq.gz
+$ gunzip sim56_mergeSort_2.fq.gz
+```
+
+**Build STAR index**
+
+Here we use [STAR2](https://github.com/alexdobin/STAR) as an example of read-alginment. For using other read-alignment tools, refer to our previous [paper](http://genome.cshlp.org/content/26/1/108.full). First, we build index file for running STAR2:
+
+Since SMC-RNA sim56 data was simulated using GRCh37, we also use GRCh37 for this example. Suppose you have intalled STAR2 at ~/STAR2/.
+
+```sh
+$ ~/STAR2/Linux_x86_64_static_gcc4.7.0/STAR --runThreadN 4 --runMode genomeGenerate --genomeDir ~/STAR2/index_file/data/GRCh37/star_indices_overhang100/ --genomeFastaFiles ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh37_r75.all.fa --sjdbGTFfile ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh37.75.gtf --sjdbOverhang 100
+```
+
+Note that, refer [Input][] for downloading and creating _GRCh37_r75.all.fa_ and _Homo_sapiens.GRCh37.75.gtf_. 
+
+**Run STAR**
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/example/Example2/running_star/
+$ ~/STAR2/Linux_x86_64_static_gcc4.7.0/STAR --runThreadN 12 --genomeDir ~/STAR2/index_file/data/GRCh37/star_indices_overhang100/ --readFilesIn ~/INTEGRATE-Vis-master/example/Example2/sim56_data/training_sim56_mergeSort_1.fq ~/INTEGRATE-Vis-master/example/Example2/sim56_data/training_sim56_mergeSort_2.fq --outFileNamePrefix star --chimSegmentMin 18
+```
+
+Make the sorted BAM file for Chimeric reads:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/example/Example2/running_star/
+$ samtools view -Sb -o starChimeric.out.bam starChimeric.out.sam
+$ samtools sort starChimeric.out.bam starChimeric.out.sort
+$ samtools index starChimeric.out.sort.bam
+```
+
+**Gene fusion discovery**
+
+Here we use INTEGRATE to discovery gene fusons. For how to download and install, and run INTEGRATE please refer [here](https://sourceforge.net/projects/integrate-fusion/). We need Homo_sapiens.GRCh37.75.tsv and bwts/ to run INTEGRATE. 
+
+_Homo_sapiens.GRCh37.75.tsv_ can be created by running:
+
+```sh
+$ ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/
+$ gtfToGenePred -genePredExt -geneNameAsName2 Homo_sapiens.GRCh37.75.gtf Homo_sapiens.GRCh37.75.genePred
+$ cut -f 1-10,12 Homo_sapiens.GRCh37.75.genePred > tmp.txt
+$ echo -e "#GRCh37.ensGene.name\tGRCh37.ensGene.chrom\tGRCh37.ensGene.strand\tGRCh37.ensGene.txStart\tGRCh37.ensGene.txEnd\tGRCh37.ensGene.cdsStart\tGRCh37.ensGene.cdsEnd\tGRCh37.ensGene.exonCount\tGRCh37.ensGene.exonStarts\tGRCh37.ensGene.exonEnds\tGRCh37.ensemblToGeneName.value" > Homo_sapiens.GRCh37.75.tsv
+$ cat tmp.txt >> Homo_sapiens.GRCh37.75.tsv
+```
+
+and bwts/ can be created by running:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/
+$ mkdir bwts
+$ Integrate mkbwt GRCh37_r75.all.fa
+```
+
+Run INTEGRATE (Download and see installation instructions [here](https://sourceforge.net/projects/integrate-fusion/)):
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/example/Example2/running_star/fusion_discovery/
+$ Integrate fusion ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh37_r75.all.fa ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh37.75.tsv ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/sequence/bwts/ ~/INTEGRATE-Vis-master/example/Example2/running_star/starChimeric.out.sort.bam ~/INTEGRATE-Vis-master/example/Example2/running_star/starChimeric.out.sort.bam
+```
+
+After running INTEGRATE, we have a file called _fusions.bedpe_ under ~/INTEGRATE-Vis-master/example/Example2/running_star/fusion_discovery/. If you have generated figures using the .bedpe files in Example 1, you should be able to run INTEGRATE-Vis and generate visualizations for this example (Example 2) too. Commands for generating visualizations for Example 2 can be found below. 
+
+**Evaluate our discovery**
+
+Before doing that, let's take a look at the _fusions.bedpe_ file and see how well was the fusion discovery. 
+
+First, we can use the _bedpeAnnotator_ tool that comes with INTEGRATE-Vis to annotate the gene fusions we discovered:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/example/Example2/evaluation/
+$ ~/opt/bin/fusionBedpeAnnotator -r ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh37_r75.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh37.75.genePred -d ./difile.txt -i ~/INTEGRATE-Vis-master/example/Example2/running_star/fusion_discovery/fusions.bedpe -o ./fusions.annot.bedpe
+```
+
+_/fusions.annot.bedpe_ includes 25 gene fusion candicates with fusion junctions aligned to exon boundaries (Column 12 of _/fusions.annot.bedpe_), and 3 are not. Since we know the simulation only included gene fusions with protein coding genes on the exon boundaries. We remove the 3 that are not on the boundaries and save a 11-column bedpe file with the following command:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/example/Example2/evaluation/
+$ awk '$12==1{print}' fusions.annot.bedpe | cut -f 1-11 > fusions.cano.bedpe
+```
+
+Second, go to the [Google Cloud](https://console.cloud.google.com/storage/browser/dream-smc-rna/training), click on sim56_filtered.bedpe and save it to ~/INTEGRATE-Vis-master/example/Example2/sim56_data/. This is the "truth" file for gene fusions simulated in this dataset. We see that _sim56_filtered.bedpe_ is not quite following the standardized SMC-RNA bedpe [format](https://www.synapse.org/#!Synapse:syn2813589/wiki/401442) yet. So we first fix it by running:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/example/Example2/evaluation/
+$ awk '{printf $0"\t"}$9=="1"{printf "+\t"}$9=="-1"{printf "-\t"}$10=="1"{print "+"}$10=="-1"{print "-"}' training_sim56_filtered.bedpe | cut -f 1-8,11,12> training_sim56_filtered.2.bedpe
+```
+
+Third, we can download the fusionToolEvaluator from [here](https://github.com/Sage-Bionetworks/SMC-RNA-Challenge/tree/master/FusionDetection/Evaluator), and run a comparison. For your convinience, the source code has been downloaded and stored [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/evaluation/Evaluator/).
+
+Commands for install fusionToolEvaluator:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/example/Example2/evaluation/
+$ mkdir build
+$ cd build
+$ cmake ../Evaluator/ -DCMAKE_BUILD_TYPE=release
+$ make
+```
+
+Evaluation:
+
+```sh
+cd ~/INTEGRATE-Vis-master/example/Example2/evaluation/
+$ INTEGRATE-Vis-master/example/Example2/evaluation/build/bin/fusionToolEvaluator -t training_sim56_filtered.2.bedpe -r fusions.cano.bedpe -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh37.75.genePred -s rule.txt -o result.txt
+```
+
+We see from _result.txt_ that the sensitivy is 67% and precision is 96%, which equal to a F1 score of 79%. These values are consistent with the experiment by running STAR and INTEGRATE on the cell line data in our prevous [paper](http://genome.cshlp.org/content/26/1/108.full). Using other read-alignment tools, or commbing multiple read-alignment tools may have better results as indicated in the [paper](http://genome.cshlp.org/content/26/1/108.full).
+
+Now we plot the gene fusion visualizations:
+
+**A Structure**
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example2/
+$ python ~/opt/bin/Integrate-vis.py structure -b ~/INTEGRATE-Vis/example/Example2/evaluation/fusions.cano.bedpe -s sim56 -d ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/ideogram/Ideogram.37.tsv -r ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh37_r75.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh37.75.gtf -m ./running_star/starChimeric.out.sort.bam -o ./panelA -k
+```
+
+_fusions.cano.bedpe_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/evaluation/fusions.cano.bedpe). _Ideogram.37.tsv_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/INTEGRATE-Vis.1.0.0/data/ideogram/Ideogram.37.tsv). _GRCh37\_r75.all.fa_ and _Homo\_sapiens.GRCh37.75.gtf_ can be downloaded and created as shown above in [Input][]. _starChimeric.out.sort.bam_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/running_star/starChimeric.out.sort.bam).
+
+After running the command, you can find the PDF files for (A) structure under ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example2/panelA/ for the fusions in [fusions.cano.bedpe](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/evaluation/fusions.cano.bedpe). These PDF files can also be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/panelA/).
+
+**B Domain**
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example2/
+$ python ~/opt/bin/Integrate-vis.py domain -b ~/INTEGRATE-Vis/example/Example2/evaluation/fusions.cano.bedpe -s sim56 -d ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/domain_table/Domain_table.37.tsv ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh37_r75.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh37.75.gtf -o ./panelB -k
+```
+
+_fusions.cano.bedpe_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/evaluation/fusions.cano.bedpe). _domain_table.37.tsv_ can be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/INTEGRATE-Vis.1.0.0/data/domain_table/Domain_table.37.tsv) or created as shown above in [Input][]. _GRCh37\_r75.all.fa_ and _Homo\_sapiens.GRCh37.75.gtf_ can be downloaded and created as shown above in [Input][].
+
+After running the command, you can find the PDF files for (B) domain under ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example2/panelB/ for the fusions in [fusions.cano.bedpe](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/evaluation/fusions.cano.bedpe). These PDF files can also be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/panelB/)
+
+**C Exon expression**
+
+Make the sorted BAM file for aligned reads:
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/example/Example2/running_star/
+$ samtools view -Sb -o starAligned.out.bam starAligned.out.sam
+$ samtools sort starAligned.out.bam starAligned.out.sort
+$ samtools index starAligned.out.sort.bam
+```
+
+```sh
+$ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example2/
+$ python ~/opt/bin/Integrate-vis.py exon-exp -b ~/INTEGRATE-Vis/example/Example2/evaluation/fusions.cano.bedpe -s sim56 -m ~/INTEGRATE-Vis-master/example/Example2/running_star/starAligned.out.sort.bam -r ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh38_r75.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh37.75.gtf -o ./panelC -k
+```
+
+_fusions.cano.bedpe_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/evaluation/fusions.cano.bedpe). _starAligned.out.sort.bam_ can be created by running the commands in section **Run STAR** above. _GRCh37\_r75.all.fa_ and _Homo\_sapiens.GRCh37.75.gtf_ can be downloaded and created as shown above in [Input][].
+
+After running the command, you can find the PDF files for C (exon expression) under ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example2/panelC/ for the fusions in [fusions.cano.bedpe](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/evaluation/fusions.cano.bedpe). These PDF files can also be downloaded [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example2/panelC/).
+
+Note that you may merge starAligned.out.sort.bam and starChimeric.out.sort.bam to plot this visualization.  
+
+**D Gene expression**
+
+Here we are not simulating a whole population of samples in this example, because the current gene fusion read simulation tools are mostly simulating reads independently for different individuals. Therefore, the gene expression in the simulated cohort can be random with out any pattern related to gene fusions, unless the simulation tool takes in gene expression profiles from a real tumor population. For this reason, the (D) gene expression in Example 1 is actually a better data to show how to generate this visualization. 
 
 ### Enjoy!
+
+Additional notes: Due to file size limitation at GitHub, the following files are not uploaded to this repository. All these files can be downloaded or created following the commands above. 
+```sh
+/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh37_r75.all.fa
+/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh38_r85.all.fa
+INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh37.75.gtf 
+INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/Homo_sapiens.GRCh38.85.gtf
+INTEGRATE-Vis-master/example/Example2/sim56_data/*
+INTEGRATE-Vis-master/example/Example2/running_star/starAligned*
+```
+
+Please compile the gene fusion evaluator under this directory following the commands provided above. 
+```sh
+INTEGRATE-Vis-master/example/Example2/evaluation/build/*
+```
+
+If you use git clone to get the repository, please INTEGRATE-Vis instead of INTEGRATE-Vis-master in the previous paths. 
+

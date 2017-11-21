@@ -9,6 +9,7 @@ from textwrap import wrap
 import re
 import time
 import os
+import pdb
 
 # example: python pb.py -5 ENSG00000184012 -3 ENSG00000157554 -f 41498118 -t 38445621 -s 0 -p 'RHSNASQSLCEIVRLSRDQMLQIQNSTEPDPLLATLEKX 37 2 ENST00000332149(731)|ENST00000454499(731);ENST00000288319;ENST00000294304' -d domain_table.txt -m /gscmnt/gc2601/maherlab/jzhang/PRAD2/ensembl/Homo_sapiens.GRCh38.85.gtf -o plots/pb.pdf
 
@@ -69,7 +70,7 @@ class PANEL_B:
     trans_ID_3 = 'None'
 
     #computed
-    TR_frames = '' 
+    TR_frames = ''
     in_frame_TRs_5 = []
     in_frame_TRs_3 = []
     out_frame_TRs_3 = []
@@ -101,12 +102,14 @@ class PANEL_B:
     domain_list_5 = []
     included_domain_list_3 = []
     included_domain_list_5 = []
+    fusion_offset = 0
 
     #fixed
-    graphic_protein_length = 1.5
+    font_size = 10
+    graphic_protein_length = 1.7
     graphic_protein_width = 0.1
     graphic_protein_y = 0.3
-    graphic_protein_x = 0.25
+    graphic_protein_x = 0.13
     fig = plt.figure()
     ax = fig.add_subplot(111, aspect='equal')
     colors = ['#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928']
@@ -209,12 +212,12 @@ class PANEL_B:
         os.remove(output_dir+"."+suffix)
 
     def get_gene_names(self, gene_ID_3, gene_ID_5, gene_model_dir):
-        description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_3, gene_model_dir), shell = True).rstrip('\n').split('; ')
-        description[:] = [x.split(' ') for x in description]
-        self.gene_name_3 = next(x for x in description if x[0] == 'gene_name')[1][1:-1]
-        description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_5, gene_model_dir), shell = True).rstrip('\n').split('; ')
-        description[:] = [x.split(' ') for x in description]
-        self.gene_name_5 = next(x for x in description if x[0] == 'gene_name')[1][1:-1]
+        description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_3, gene_model_dir), shell = True).rstrip('\n').rstrip(';').replace('"', '').split('; ')
+        description = dict([x.split(' ') for x in description])
+        self.gene_name_3 = description['gene_name']
+        description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_5, gene_model_dir), shell = True).rstrip('\n').rstrip(';').replace('"', '').split('; ')
+        description = dict([x.split(' ') for x in description])
+        self.gene_name_5 = description['gene_name']
         #print("got gene names: " + self.gene_name_3 + " " + self.gene_name_5)
 
     def get_directionality(self, gene_ID_3, gene_ID_5, gene_model_dir):
@@ -235,23 +238,26 @@ class PANEL_B:
         #print("transcript ID: " + self.TR_ID_3)
 
     def find_best_transcript(self, gene_ID, strand, side):
-        #description = subprocess.check_output("grep %s %s | awk '$3 == \"transcript\"' | cut -f4,5,9" % (gene_ID, self.gene_model_dir), shell = True).rstrip('\n').split('\n')
         description = subprocess.check_output("grep %s %s | awk '$3 == \"transcript\"' | cut -f4,5,9" % (gene_ID, self.gene_model_dir_2), shell = True).rstrip('\n').split('\n')
-        description[:] = [re.split('; |\t', x) for x in description]
-        for transcript in description:
-            transcript[:] = [x.split(' ') for x in transcript]
+        description[:] = [transcript.split('\t') for transcript in description]
+        description = [[transcript[0], transcript[1], dict([info.replace('"', '').split(' ') for info in transcript[2].rstrip(';').split('; ')])] for transcript in description]
 
-        TR_ID_list = [transcript[4][1][1:-1] for transcript in description]
+        TR_ID_list = [transcript[2]['transcript_id'] for transcript in description]
 
         min_dist_from_fusion = []
         length = []
-        biotype = [transcript[13][1][1:-1] for transcript in description]
-        #print description
-        tsl_list = [transcript[-1][1][1:-2] for transcript in description]
-        #print tsl_list
-        for i in range(len(tsl_list)):
-            #tsl_list[i] = int(tsl_list[i]) if tsl_list[i] != 'NA' else 6
-            tsl_list[i] = int(tsl_list[i]) if isinstance(tsl_list[i], (int, long)) else 6
+
+        biotype = [transcript[2]['gene_biotype'] for transcript in description]
+
+        tsl = []
+        for transcript in description:
+            if ('transcript_support_level' in transcript[2]):
+                if isinstance(transcript[2]['transcript_support_level'], (int, long)):
+                    tsl.append(int(transcript[2]['transcript_support_level']))
+                else:
+                    tsl.append(6)
+            else:
+                tsl.append(6)
 
         for ID in TR_ID_list:
             exon_junctions = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f4,5" % (ID, self.gene_model_dir_2), shell = True).rstrip('\n').split('\n')
@@ -269,37 +275,31 @@ class PANEL_B:
             min_dist_from_fusion.append(min(distances))
 
         in_frame = [int(ID in self.in_frame_TRs_5) for ID in TR_ID_list] if side == '5' else [int(ID in self.in_frame_TRs_3) for ID in TR_ID_list]
-
-        TR_list = zip(TR_ID_list, biotype, in_frame, min_dist_from_fusion, tsl_list, length)
-        TR_list.sort(key = lambda x: ((x[1] != 'protein_coding'), -x[2], x[3], x[4], -x[5]))
-        #print("Transcript metrics: ")
-        #print(TR_list)
+        TR_list = zip(TR_ID_list, biotype, in_frame, min_dist_from_fusion, tsl, length)
+        TR_list.sort(key = lambda x: ((x[1] != 'trans_coding'), -x[2], x[3], x[4], -x[5]))
         return TR_list[0][0]
 
     def get_exons(self, side, TR_ID):
         gene_name = self.gene_name_5 if side == '5' else self.gene_name_3
-
-        #exon_list = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f1,4,5,9" % (TR_ID, self.gene_model_dir), shell = True).rstrip("\n").split("\n")
+        # chr number, start, end, exon number
         exon_list = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f1,4,5,9" % (TR_ID, self.gene_model_dir_2), shell = True).rstrip("\n").split("\n")
-        exon_list[:] = [re.split('; |\t', exon) for exon in exon_list]
-        for exon in exon_list:
-                exon[:] = [x.split(' ') for x in exon]
-        exon_list[:] = [(exon[0][0], int(exon[1][0]), int(exon[2][0]), exon[7][1][1:-1]) for exon in exon_list]
+        exon_list[:] = [exon.split('\t') for exon in exon_list]
+        exon_list = [[exon[0], exon[1], exon[2], dict([info.replace('"', '').split(' ') for info in exon[3].rstrip(';').split('; ')])] for exon in exon_list]
+        exon_list[:] = [(exon[0], int(exon[1]), int(exon[2]), exon[3]['exon_number']) for exon in exon_list]
         exon_list.sort(key = lambda x: x[1])
 
         if side == '5':
             self.exons_5 = exon_list
+            self.ch_5 = exon_list[0][0] # not cast to int
             self.TR_start_5 = int(exon_list[0][1])
             self.TR_end_5 = int(exon_list[-1][2])
             self.TR_length_5 = sum([int(exon[2]) - int(exon[1]) for exon in exon_list])
         else:
             self.exons_3 = exon_list
+            self.ch_3 = exon_list[0][0] # not cast to int
             self.TR_start_3 = int(exon_list[0][1])
             self.TR_end_3 = int(exon_list[-1][2])
             self.TR_length_3 = sum([int(exon[2]) - int(exon[1]) for exon in exon_list])
-
-        #print("detected exons for " + gene_name + ":")
-        #print(exon_list)
 
     def get_fusion_exons(self, strand, side, fusion_point, exon_list):
         fusion_exon_list = []
@@ -339,21 +339,21 @@ class PANEL_B:
         self.display_ratio = self.graphic_protein_length/self.fusion_TR_length
 
     def highlight_fusion_junction(self):
-        fusion_offset = float(self.TR_fragment_length_5) * self.graphic_protein_length/self.fusion_TR_length
+        self.fusion_offset = float(self.TR_fragment_length_5) * self.graphic_protein_length/self.fusion_TR_length
 
         #print("fusion_TR_length: " + str(self.fusion_TR_length))
-        #print("fusion_offset: " + str(fusion_offset))
+        #print("self.fusion_offset: " + str(self.fusion_offset))
 
         fusion_mark_y = self.graphic_protein_y + self.graphic_protein_width + 0.01
 
         fusion_mark = lines.Line2D(
-        [self.graphic_protein_x + fusion_offset - 0.05, self.graphic_protein_x + fusion_offset, self.graphic_protein_x + fusion_offset + 0.05],
+        [self.graphic_protein_x + self.fusion_offset - 0.05, self.graphic_protein_x + self.fusion_offset, self.graphic_protein_x + self.fusion_offset + 0.05],
         [fusion_mark_y + 0.05, fusion_mark_y, fusion_mark_y + 0.05],
         c = "black", alpha = 1, lw = 3
         )
 
         fusion_division = lines.Line2D(
-        [self.graphic_protein_x + fusion_offset, self.graphic_protein_x + fusion_offset],
+        [self.graphic_protein_x + self.fusion_offset, self.graphic_protein_x + self.fusion_offset],
         [fusion_mark_y - self.graphic_protein_width - 0.01, fusion_mark_y],
         c = "black", alpha = 1, lw = self.protein_line_width * 4
         )
@@ -366,9 +366,11 @@ class PANEL_B:
         CDS_list[:] = [CDS.split('\t') for CDS in CDS_list]
         if CDS_list[0][0] == '':
             if side == '5':
-                return self.TR_fragment_length_5, self.TR_fragment_length_5
+                # return self.TR_fragment_length_5, self.TR_fragment_length_5
+                return self.TR_length_5, self.TR_length_5
             else:
-                return self.TR_fragment_length_3, self.TR_fragment_length_3
+                # return self.TR_fragment_length_3, self.TR_fragment_length_3
+                return self.TR_length_3, self.TR_length_3
         CDS_list.sort(key = lambda x: x[0])
         #print(CDS_list)
         CDS_start = int(CDS_list[0][0])
@@ -411,7 +413,7 @@ class PANEL_B:
         )
 
         three_p_utr_box_3 = patches.Rectangle(
-        (self.graphic_protein_x + self.graphic_protein_length - self.three_p_utr_length_3 * self.display_ratio, self.graphic_protein_y), graphic_utr_length_3, self.graphic_protein_width, ec = 'black', fill = True, lw = self.protein_line_width, fc = '#808080', hatch = '////'
+        (self.graphic_protein_x + self.graphic_protein_length - graphic_utr_length_3, self.graphic_protein_y), graphic_utr_length_3, self.graphic_protein_width, ec = 'black', fill = True, lw = self.protein_line_width, fc = '#808080', hatch = '////'
         )
 
         self.ax.add_patch(five_p_utr_box_5)
@@ -419,14 +421,14 @@ class PANEL_B:
 
         if self.five_p_utr_length_3 > (self.TR_length_3 - self.TR_fragment_length_3):
             five_p_utr_box_3 = patches.Rectangle(
-            (self.graphic_protein_x + self.TR_fragment_length_5 * self.display_ratio, self.graphic_protein_y), self.display_ratio * (self.five_p_utr_length_3 - (self.TR_length_3 - self.TR_fragment_length_3)), self.graphic_protein_width, ec = 'black', fill = True, lw = self.protein_line_width, fc = '#808080', hatch = '////')
+            (self.graphic_protein_x + self.fusion_offset, self.graphic_protein_y), self.display_ratio * (self.five_p_utr_length_3 - (self.TR_length_3 - self.TR_fragment_length_3)), self.graphic_protein_width, ec = 'black', fill = True, lw = self.protein_line_width, fc = '#808080', hatch = '////')
             self.ax.add_patch(five_p_utr_box_3)
 
         if self.three_p_utr_length_5 > (self.TR_length_5 - self.TR_fragment_length_5):
+            three_p_utr_length = self.display_ratio * (self.three_p_utr_length_5 - (self.TR_length_5 - self.TR_fragment_length_5))
             three_p_utr_box_5 = patches.Rectangle(
-            (self.graphic_protein_x + self.TR_fragment_length_5 * self.display_ratio, self.graphic_protein_y), self.display_ratio * (self.three_p_utr_length_5 - (self.TR_length_5 - self.TR_fragment_length_5)), self.graphic_protein_width, ec = 'black', fill = True, lw = self.protein_line_width, fc = '#808080', hatch = '////')
+            (self.graphic_protein_x + self.fusion_offset - three_p_utr_length, self.graphic_protein_y), three_p_utr_length, self.graphic_protein_width, ec = 'black', fill = True, lw = self.protein_line_width, fc = '#808080', hatch = '////')
             self.ax.add_patch(three_p_utr_box_5)
-
 
     def get_domain_list(self, TR_ID):
         try:
@@ -469,11 +471,11 @@ class PANEL_B:
         return included_domain_list
 
     def label_domains(self):
-
-        utr_label_x = 0.3
+        utr_label_x = self.graphic_protein_x + 0.1
         utr_label_y = 1.75
         domain_lengend_figure_width = 0.05
-        plt.text(utr_label_x, utr_label_y + domain_lengend_figure_width, "UTR", fontsize = 12, ha = 'left', va = 'top')
+        line_width = 0.07
+        plt.text(utr_label_x, utr_label_y + domain_lengend_figure_width, "UTR", fontsize = self.font_size, ha = 'left', va = 'top')
         utr_label = patches.Rectangle(
         (utr_label_x - 0.1, utr_label_y), domain_lengend_figure_width, domain_lengend_figure_width, ec = 'black', alpha = 1, fill = True, lw = self.protein_line_width, fc = '#808080', hatch = '////'
         )
@@ -481,21 +483,22 @@ class PANEL_B:
 
         all_domain_list = self.included_domain_list_5 + self.included_domain_list_3 if self.potential_in_frame else self.included_domain_list_5
         domain_legend_x = utr_label_x
-        domain_legend_y = utr_label_y - 0.1
+        domain_legend_y = utr_label_y - line_width
 
         for domain in all_domain_list:
             domain_name = domain[5]
             wrap_time = 1
-            if len(domain_name) > 21:
-                wrap_time += len(domain_name)/21
-                domain_name = "\n".join(wrap(domain_name,21))
+            max_chars = 22
+            if len(domain_name) > max_chars:
+                wrap_time += (len(wrap(domain_name,max_chars)) - 1)
+                domain_name = "\n".join(wrap(domain_name,max_chars))
             #print(domain_name)
-            plt.text(domain_legend_x, domain_legend_y + domain_lengend_figure_width, domain_name, fontsize = 12, ha = 'left', va = 'top')
+            plt.text(domain_legend_x, domain_legend_y + domain_lengend_figure_width, domain_name, fontsize = self.font_size, ha = 'left', va = 'top')
             domain_lengend_figure = patches.Rectangle(
             (domain_legend_x - 0.1, domain_legend_y), domain_lengend_figure_width, domain_lengend_figure_width, ec = 'black', alpha = 1, fill = True, lw = self.protein_line_width, fc = self.domain_colors.next()
             )
             self.ax.add_patch(domain_lengend_figure)
-            domain_legend_y -= 0.1 * wrap_time
+            domain_legend_y -= line_width * wrap_time
 
     def check_out_of_frame(self):
         fusion_in_3p_utr = self.TR_fragment_length_3 < self.three_p_utr_length_3 # fusion falls in 3 prime utr region of 3 prime gene
@@ -544,20 +547,20 @@ class PANEL_B:
 
     def draw_right_legend(self):
 
-        right_lengend_x = 1.25
+        right_lengend_x = 1.4
         right_legend_1_y = 1.75
         right_legend_2_y = right_legend_1_y - 0.2
         right_legend_3_y = right_legend_2_y - 0.2
         right_legend_4_y = 0.9
         right_legend_5_y = 0.7
 
-        plt.text(right_lengend_x, right_legend_1_y, "Fusion Junction", fontsize = 12, ha = 'left')
-        plt.text(right_lengend_x, right_legend_2_y, "Termination", fontsize = 12, ha = 'left')
-        plt.text(right_lengend_x, right_legend_3_y, "Out of Frame", fontsize = 12, ha = 'left')
-        #plt.text(right_lengend_x, right_legend_4_y, "5' partner", fontsize = 12, ha = 'center')
-        #plt.text(right_lengend_x, right_legend_5_y, "3' partner", fontsize = 12, ha = 'center')
+        plt.text(right_lengend_x, right_legend_1_y, "Fusion Junction", fontsize = self.font_size, ha = 'left')
+        plt.text(right_lengend_x, right_legend_2_y, "Termination", fontsize = self.font_size, ha = 'left')
+        plt.text(right_lengend_x, right_legend_3_y, "Out of Frame", fontsize = self.font_size, ha = 'left')
+        #plt.text(right_lengend_x, right_legend_4_y, "5' partner", fontsize = self.font_size, ha = 'center')
+        #plt.text(right_lengend_x, right_legend_5_y, "3' partner", fontsize = self.font_size, ha = 'center')
 
-        legend_figures_x = 1.15
+        legend_figures_x = right_lengend_x - 0.1
 
         fusion_mark_x = legend_figures_x
         fusion_mark_lengend_y = right_legend_1_y
@@ -615,16 +618,27 @@ class PANEL_B:
 
         #self.ax.add_line(p3_mark)
 
-
-
     def add_tick_marks(self):
-        coding_start = min(self.TR_fragment_length_5, self.five_p_utr_length_5) if ((self.TR_fragment_length_3 < (self.TR_length_3 - self.five_p_utr_length_3)) or self.TR_fragment_length_3 == self.five_p_utr_length_3 )else (self.TR_fragment_length_5 + self.five_p_utr_length_3)
-        if (self.potential_in_frame == 1) or (self.TR_fragment_length_3 > (self.TR_length_3 - self.five_p_utr_length_3)) or (self.TR_fragment_length_3 == self.five_p_utr_length_3): # fusion at 3p utr of 3p gene or 3p gene non coding
-            coding_end = self.fusion_TR_length - min(self.three_p_utr_length_3, self.TR_fragment_length_3)
+        # left side
+        coding_start_left = min(self.TR_fragment_length_5, self.five_p_utr_length_5)
+        coding_end_left = min(self.TR_fragment_length_5, self.TR_length_5 - self.three_p_utr_length_5)
+
+        # right side
+        five_p_utr_on_3p_fragment = self.five_p_utr_length_3 - (self.TR_length_3 - self.TR_fragment_length_3)
+        coding_start_right = five_p_utr_on_3p_fragment + self.TR_fragment_length_5 if five_p_utr_on_3p_fragment > 0 else self.TR_fragment_length_5
+        coding_end_right = self.TR_fragment_length_5 if self.check_out_of_frame() else self.fusion_TR_length - min(self.three_p_utr_length_3, self.TR_fragment_length_3)
+
+        # conitinuous translated region
+        if coding_end_left == coding_start_right:
+            self.mark_helper(coding_start_left, coding_end_right, True)
         else:
-            coding_end = self.TR_fragment_length_5
+            if self.check_out_of_frame():
+                self.mark_helper(coding_start_left, coding_end_left, True)
+            else:
+                self.mark_helper(coding_start_left, coding_end_left, False)
+                self.mark_helper(coding_start_right, coding_end_right, True)
 
-
+    def mark_helper(self, coding_start, coding_end, aa_label):
         protein_length = int((coding_end - coding_start)/3)
 
         if protein_length > 0:
@@ -638,17 +652,20 @@ class PANEL_B:
                 interval = int(0.2 * (10 ** (number_of_digits - 1))) * 2
             if number_of_digits == 1:
                 interval = 1
-            if (protein_length * 3 * self.display_ratio < 0.25):
+            if (protein_length * 3 * self.display_ratio < 0.3): # range too narrow, changed threashold from 0.25 to 0.3
                 interval = protein_length
 
             number_of_ticks = int(protein_length/interval)
 
             for i in range(0, number_of_ticks + 1):
+                ha = 'center' if i == 0 else 'right'
                 offset = 3 * interval * self.display_ratio * i
-                plt.text(self.graphic_protein_x + coding_start * self.display_ratio + offset, self.graphic_protein_y - 0.01, i * interval, fontsize = 6, ha = 'center', va = 'top')
+                plt.text(self.graphic_protein_x + coding_start * self.display_ratio + offset, self.graphic_protein_y - 0.04, i * interval, fontsize = 6, ha = ha, va = 'bottom')
 
-            aa_offset = 3 * interval * self.display_ratio * number_of_ticks
-            plt.text(self.graphic_protein_x + coding_start * self.display_ratio + aa_offset + 0.1, self.graphic_protein_y - 0.01, "aa", fontsize = 6, ha = 'center', va = 'top')
+            # plt.text(self.graphic_protein_x + coding_start * self.display_ratio + aa_offset + 0.1, self.graphic_protein_y - 0.01, "aa", fontsize = 6, ha = 'center', va = 'top')
+            if aa_label:
+                aa_offset = 3 * interval * self.display_ratio * number_of_ticks
+                plt.text(self.graphic_protein_x + coding_start * self.display_ratio + aa_offset + 0.05, self.graphic_protein_y - 0.04, "aa", fontsize = 6, ha = 'right', va = 'bottom')
 
     def label_genes(self):
         gene_label_x_5 = self.graphic_protein_x + self.TR_fragment_length_5 * self.display_ratio/2
@@ -658,19 +675,16 @@ class PANEL_B:
         plt.text(gene_label_x_3, gene_label_y, self.gene_name_3, fontsize = 10, ha = 'center', va = 'top')
 
     def label_terminals(self):
-        plt.text(self.graphic_protein_x - 0.1, self.graphic_protein_y + self.graphic_protein_width/2, "N", fontsize = 12, ha = 'center', va = 'center')
-        plt.text(self.graphic_protein_x + self.graphic_protein_length + 0.1, self.graphic_protein_y + self.graphic_protein_width/2, "C", fontsize = 12, ha = 'center', va = 'center')
+        offset = 0.08
+        plt.text(self.graphic_protein_x - offset, self.graphic_protein_y + self.graphic_protein_width/2, "N", fontsize = 12, ha = 'right', va = 'center')
+        plt.text(self.graphic_protein_x + self.graphic_protein_length + offset - 0.02, self.graphic_protein_y + self.graphic_protein_width/2, "C", fontsize = 12, ha = 'left', va = 'center')
 
     def highlight_53(self):
-        # bar_width = 0.025
-        # highlight_box_5 = patches.Rectangle(
-        # (self.graphic_protein_x, self.graphic_protein_y - bar_width), self.TR_fragment_length_5 * self.display_ratio, bar_width, ec = 'none', alpha = 1, fill = True, fc = 'blue')
-        # highlight_box_3 = patches.Rectangle(
-        # (self.graphic_protein_x + self.TR_fragment_length_5 * self.display_ratio, self.graphic_protein_y - bar_width), self.TR_fragment_length_3 * self.display_ratio, bar_width, ec = 'none', alpha = 1, fill = True, fc = 'red')
         highlight_box_5 = patches.Rectangle(
         (self.graphic_protein_x, self.graphic_protein_y), self.TR_fragment_length_5 * self.display_ratio, self.graphic_protein_width, ec = 'blue', alpha = 1, fill = False, lw = self.protein_line_width * 4)
+        fusion_x = self.graphic_protein_x + self.TR_fragment_length_5 * self.display_ratio
         highlight_box_3 = patches.Rectangle(
-        (self.graphic_protein_x + self.TR_fragment_length_5 * self.display_ratio, self.graphic_protein_y), self.TR_fragment_length_3 * self.display_ratio, self.graphic_protein_width, ec = 'red', alpha = 1, fill = False, lw = self.protein_line_width * 4)
+        (fusion_x, self.graphic_protein_y), self.graphic_protein_x + self.graphic_protein_length - fusion_x, self.graphic_protein_width, ec = 'red', alpha = 1, fill = False, lw = self.protein_line_width * 4)
         self.ax.add_patch(highlight_box_3)
         self.ax.add_patch(highlight_box_5)
 

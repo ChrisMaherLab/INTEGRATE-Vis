@@ -9,7 +9,9 @@ import getopt
 import sys
 import os
 import time
+import pdb
 import readsNum_getter as rng
+
 
 def usage():
     print """
@@ -334,12 +336,18 @@ class PANEL_A:
             plt.text(self.reads_x_middle+0.35, self.reads_y_bottom + pos_sp1*self.increase, "Spanning reads "+str(sp1)+" (anchor at 3')", fontsize = 8, ha = 'left')
 
     def get_gene_names(self, gene_ID_3, gene_ID_5, gene_model_dir):
-        description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_3, gene_model_dir), shell = True).rstrip('\n').split('; ')
-        description[:] = [x.split(' ') for x in description]
-        self.gene_name_3 = next(x for x in description if x[0] == 'gene_name')[1][1:-1]
-        description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_5, gene_model_dir), shell = True).rstrip('\n').split('; ')
-        description[:] = [x.split(' ') for x in description]
-        self.gene_name_5 = next(x for x in description if x[0] == 'gene_name')[1][1:-1]
+        # description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_3, gene_model_dir), shell = True).rstrip('\n').split('; ')
+        # description[:] = [x.split(' ') for x in description]
+        # self.gene_name_3 = next(x for x in description if x[0] == 'gene_name')[1][1:-1]
+        # description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_5, gene_model_dir), shell = True).rstrip('\n').split('; ')
+        # description[:] = [x.split(' ') for x in description]
+        # self.gene_name_5 = next(x for x in description if x[0] == 'gene_name')[1][1:-1]
+        description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_3, gene_model_dir), shell = True).rstrip('\n').rstrip(';').replace('"', '').split('; ')
+        description = dict([x.split(' ') for x in description])
+        self.gene_name_3 = description['gene_name']
+        description = subprocess.check_output("grep %s %s |  awk '$3 == \"gene\"' | cut -f9" % (gene_ID_5, gene_model_dir), shell = True).rstrip('\n').rstrip(';').replace('"', '').split('; ')
+        description = dict([x.split(' ') for x in description])
+        self.gene_name_5 = description['gene_name']
         #print("got gene names: " + self.gene_name_3 + " " + self.gene_name_5)
 
     def get_directionality(self, gene_ID_3, gene_ID_5, gene_model_dir):
@@ -361,16 +369,30 @@ class PANEL_A:
 
     def find_best_transcript(self, gene_ID, strand, side):
         description = subprocess.check_output("grep %s %s | awk '$3 == \"transcript\"' | cut -f4,5,9" % (gene_ID, self.gene_model_dir_2), shell = True).rstrip('\n').split('\n')
-        description[:] = [re.split('; |\t', x) for x in description]
-        for transcript in description:
-            transcript[:] = [x.split(' ') for x in transcript]
+        description[:] = [transcript.split('\t') for transcript in description]
+        description = [[transcript[0], transcript[1], dict([info.replace('"', '').split(' ') for info in transcript[2].rstrip(';').split('; ')])] for transcript in description]
+        # description[:] = [re.split('; |\t', x) for x in description]
+        # for transcript in description:
+        #     transcript[:] = [x.split(' ') for x in transcript]
 
-        TR_ID_list = [transcript[4][1][1:-1] for transcript in description]
+        TR_ID_list = [transcript[2]['transcript_id'] for transcript in description]
 
         min_dist_from_fusion = []
         length = []
-        biotype = [transcript[13][1][1:-1] for transcript in description]
-        tsl = [int(transcript[-1][1][1:-2]) if isinstance(transcript[-1][1][1:-2], (int, long)) else 6  for transcript in description]
+        #to pass GRCh37 test only need change!!!!!1
+        #biotype = [transcript[13][1][1:-1] for transcript in description]
+        # biotype = ["protein_coding" for transcript in description]
+        biotype = [transcript[2]['gene_biotype'] for transcript in description]
+        # tsl = [int(transcript[-1][1][1:-2]) if isinstance(transcript[-1][1][1:-2], (int, long)) else 6  for transcript in description]
+        tsl = []
+        for transcript in description:
+            if ('transcript_support_level' in transcript[2]):
+                if isinstance(transcript[2]['transcript_support_level'], (int, long)):
+                    tsl.append(int(transcript[2]['transcript_support_level']))
+                else:
+                    tsl.append(6)
+            else:
+                tsl.append(6)
 
         for ID in TR_ID_list:
             exon_junctions = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f4,5" % (ID, self.gene_model_dir_2), shell = True).rstrip('\n').split('\n')
@@ -398,22 +420,26 @@ class PANEL_A:
 
     def get_exons(self, side, TR_ID):
         gene_name = self.gene_name_5 if side == '5' else self.gene_name_3
+        # exon_list = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f1,4,5,9" % (TR_ID, self.gene_model_dir_2), shell = True).rstrip("\n").split("\n")
+        # exon_list[:] = [re.split('; |\t', exon) for exon in exon_list]
+        # for exon in exon_list: exon[:] = [x.split(' ') for x in exon]
+        # exon_list[:] = [(exon[0][0], exon[1][0], exon[2][0], exon[7][1][1:-1]) for exon in exon_list]
 
+        # chr number, start, end, exon number
         exon_list = subprocess.check_output("grep %s %s | awk '$3 == \"exon\"' | cut -f1,4,5,9" % (TR_ID, self.gene_model_dir_2), shell = True).rstrip("\n").split("\n")
-        exon_list[:] = [re.split('; |\t', exon) for exon in exon_list]
-        for exon in exon_list:
-                exon[:] = [x.split(' ') for x in exon]
-        exon_list[:] = [(exon[0][0], exon[1][0], exon[2][0], exon[7][1][1:-1]) for exon in exon_list]
+        exon_list[:] = [exon.split('\t') for exon in exon_list]
+        exon_list = [[exon[0], exon[1], exon[2], dict([info.replace('"', '').split(' ') for info in exon[3].rstrip(';').split('; ')])] for exon in exon_list]
+        exon_list[:] = [(exon[0], int(exon[1]), int(exon[2]), exon[3]['exon_number']) for exon in exon_list]
         exon_list.sort(key = lambda x: x[1])
 
         if side == '5':
             self.exons_5 = exon_list
-            self.ch_5 = int(exon_list[0][0])
+            self.ch_5 = exon_list[0][0] # not cast to int
             self.TR_start_5 = int(exon_list[0][1])
             self.TR_end_5 = int(exon_list[-1][2])
         else:
             self.exons_3 = exon_list
-            self.ch_3 = int(exon_list[0][0])
+            self.ch_3 = exon_list[0][0] # not cast to int
             self.TR_start_3 = int(exon_list[0][1])
             self.TR_end_3 = int(exon_list[-1][2])
 
@@ -628,12 +654,19 @@ class PANEL_A:
             show = [True, False, True, False, True]
             exon_numbers = [fusion_exons[0][3], 0, fusion_exons[1][3], 0, fusion_exons[2][3]]
         if len(fusion_exons) == 2:
-            if (side == '5' and self.strand_5=='-') or (side == '3' and self.strand_3=='-'):
+            #if (side == '5' and self.strand_5=='-') or (side == '3' and self.strand_3=='-'):
+            #    show = [True, False, True, False, False]
+            #    exon_numbers = [fusion_exons[0][3], 0, fusion_exons[1][3], 0, 0]
+            #if (side == '5' and self.strand_5=='+') or (side == '3' and self.strand_3=='+'):
+            #    show = [False, False, True, False, True]
+            #    exon_numbers = [0, 0, fusion_exons[0][3], 0, fusion_exons[1][3]]
+            if (side == '5' and self.strand_5=='-') or (side == '3' and self.strand_3=='+'):
                 show = [True, False, True, False, False]
                 exon_numbers = [fusion_exons[0][3], 0, fusion_exons[1][3], 0, 0]
-            if (side == '5' and self.strand_5=='+') or (side == '3' and self.strand_3=='+'):
+            if (side == '5' and self.strand_5=='+') or (side == '3' and self.strand_3=='-'):
                 show = [False, False, True, False, True]
                 exon_numbers = [0, 0, fusion_exons[0][3], 0, fusion_exons[1][3]]
+               
         if len(fusion_exons) == 1:
             show = [False, False, True, False, False]
             exon_numbers = [0, 0, fusion_exons[0][3], 0, 0]
@@ -769,8 +802,10 @@ class PANEL_A:
             show = [1, 0, 1, 1, 1, 1, 1] if side == '5' else [1, 1, 0, 1, 1, 1, 1]
             numbers = [fusion_trans_exon_numbers[0], 0, fusion_trans_exon_numbers[-2], fusion_trans_exon_numbers[-1]] if side == '5' else [fusion_trans_exon_numbers[0], fusion_trans_exon_numbers[1], 0, fusion_trans_exon_numbers[-1]]
         elif len(fusion_trans_exon_numbers) == 3:
-            show = [0, 1, 1, 1, 0, 0, 0]
-            numbers = [0, fusion_trans_exon_numbers[0], fusion_trans_exon_numbers[1], fusion_trans_exon_numbers[2]]
+            #show = [0, 1, 1, 1, 0, 0, 0]
+            show = [0, 1, 1, 1, 0, 0, 0] if side == '5' else [1, 1, 1, 0, 0, 0, 0]
+            #numbers = [0, fusion_trans_exon_numbers[0], fusion_trans_exon_numbers[1], fusion_trans_exon_numbers[2]]
+            numbers = [0, fusion_trans_exon_numbers[0], fusion_trans_exon_numbers[1], fusion_trans_exon_numbers[2]] if side =='5' else [fusion_trans_exon_numbers[0], fusion_trans_exon_numbers[1], fusion_trans_exon_numbers[2]]
         elif len(fusion_trans_exon_numbers) == 2:
             if side == '5':
                 show = [0, 0, 1, 1, 0, 0, 0]

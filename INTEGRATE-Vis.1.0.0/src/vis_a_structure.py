@@ -130,7 +130,7 @@ def getParameters(argv):
 
 def make_dir(path):
     if not os.path.exists(path):
-        os.mkdir( path, 0755 ) 
+        os.mkdir( path, 0775 ) 
 
 def remove_tmp():
     if is_rm_tmp:
@@ -356,7 +356,7 @@ def gen_name(output_dir, sample_name, fusion_name, fusionAnnot, suffix):
     chr1=fusionAnnot[0]
     chr2=fusionAnnot[3]
     p1,p2=get_real_pos(fusionAnnot)
-    return output_dir+"/"+sample_name+"."+fusion_name+"."+chr1+s1+p1+"_"+chr2+s2+p2+"."+suffix
+    return output_dir+"/"+sample_name+"."+fusion_name+"."+chr1+s1+p1+"."+chr2+s2+p2+"."+suffix
 
 def plot_all():
     all_fusions = []  

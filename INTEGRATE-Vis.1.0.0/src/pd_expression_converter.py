@@ -99,7 +99,7 @@ def getParameters(argv):
 
 def make_dir(path):
     if not os.path.exists(path):
-        os.mkdir( path, 0755 )
+        os.mkdir( path, 0775 )
 
 s_list = []
 f_list = []

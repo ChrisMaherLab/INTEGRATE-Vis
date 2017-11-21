@@ -57,6 +57,12 @@ exp_text = 'Expression'
 y_mode = 'independent'
 max_value = -10000.0
 
+def rm_quoat(aa):
+    if aa[0]=='\"' and aa[len(aa)-1]==";":
+        return aa[1:len(aa)-2]
+    else:
+        return aa
+
 def getParameters(argv):
     try:
         opts, args = getopt.getopt(argv,"hf:5:3:s:g:t:y:r:o:we:", ["help", "file_dir=", "five_prime_ID=", "three_prime_ID=", "sort_mode=", "gene-model=", "text-of-expression=", "y-mode=", "range=", "output-dir=", "write-to-screen=", "expression-table="])

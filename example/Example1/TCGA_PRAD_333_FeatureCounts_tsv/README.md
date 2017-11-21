@@ -1,0 +1,1 @@
+Note that these files uploaded to GitHub here only contain a subset of all genes, but not all Ensembl genes, to make this testing example compact and work with the _cohort.ERG.tsv_ file. Otherwise, TSV files for all the genes for the cohort take about 7GB of space.
