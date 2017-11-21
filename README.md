@@ -169,6 +169,8 @@ The chromosome names in the reference genome, the gene models, and the fusion be
 
 This example shows how to generate visualizations when gene fusions have already been discovered and are stored using the BEDPE format above, which represents the primary goal of INTEGRATE-Vis. To see how to generate a BEDPE file for gene fusions using INTEGRATE from raw reads, please refer to example 2 ([E2. SMC-RNA sim56 data][]) below.
 
+[E2. SMC-RNA sim56 data](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/README.md "E2. SMC-RNA sim56 data")
+
 BEDPE files for 333 TCGA PRAD samples can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/example/Example1/TCGA_PRAD_333_bedpe/). Please refer to our previous [paper](https://academic.oup.com/bioinformatics/article/33/4/555/2623364) for details of these gene fusions and the methods used to discover them.
 
 This example is based on GRCh38.
