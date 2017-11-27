@@ -47,8 +47,7 @@ rm -rf tmp
 
 echo 
 echo
-echo "Please make sure you installed epd: https://www.enthought.com/products/epd/"
-echo "Please make sure you installed gtfToGenePred: http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred"
+echo "Please make you you have installed the prerequisites. See details at https://github.com/ChrisMaherLab/INTEGRATE-Vis."
 echo "Now enjoy!"
 echo 
 echo "You can run python "$destination_dir"/Integrate-vis.py" 

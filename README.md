@@ -10,16 +10,18 @@ Please make sure you have installed the following tools:
   - [CMake](https://cmake.org/)
   - [GCC](https://gcc.gnu.org/)
   - [Matplotlib](http://matplotlib.org/)
+  - [samtools](https://github.com/samtools/samtools)
+  - [bedtools](http://bedtools.readthedocs.io/en/latest/)
   - [gtfToGenePred](http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred)
 
 If not, please install these languages or tools.
-Note: Matplotlib can also be installed through using [EPDFree](https://www.enthought.com/products/epd/) or [Anaconda](https://www.anaconda.com/download/).
+Note: Matplotlib can also be installed through using [EPDFree](https://www.enthought.com/products/epd/) or [Anaconda](https://www.anaconda.com/download/). The Mac version of gtfToGenePred is [here](http://hgdownload.cse.ucsc.edu/admin/exe/macOSX.x86_64/gtfToGenePred).
 
 ### Installation
 
-Download INTEGRATE-Vis at [https://github.com/ChrisMaherLab/INTEGRATE-Vis](https://github.com/ChrisMaherLab/INTEGRATE-Vis).
+Download INTEGRATE-Vis at [https://github.com/ChrisMaherLab/INTEGRATE-Vis](https://github.com/ChrisMaherLab/INTEGRATE-Vis). Click on "Clone or download" and then click on "Download ZIP"
 
-Here, we use ~/INTEGRATE-Vis-master/ as the directory to illustrate how to install and run INTEGRATE-Vis. Please choose other directories if your home directory is small. 
+Here, we use ~/INTEGRATE-Vis-master/ as the directory to illustrate how to install and run INTEGRATE-Vis. Please choose other directories if your home directory is small. If you use git clone to get the repository, please use INTEGRATE-Vis instead of INTEGRATE-Vis-master in the commands below, and you don't need to unzip.
 
 Run the installation script (Suppose you have copied INTEGRATE-Vis-master.zip to ~):
 
@@ -183,7 +185,7 @@ Suppose you downloaded INTEGRATE-Vis, and unzipped it at ~/INTEGRATE-Vis-master/
 
 ```sh
 $ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/example/Example1/
-$ python ~/opt/bin/Integrate-vis.py structure -b ~/INTEGRATE-Vis-master/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe -s TCGA-ZG-A8QZ-01 -d ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/ideogram/Ideogram.38.tsv -r ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh38_r85.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -m ~INTEGRATE-Vis/example/Example1/simulated.TCGA-ZG-A8QZ-01.bam -o ./panelA -k
+$ python ~/opt/bin/Integrate-vis.py structure -b ~/INTEGRATE-Vis-master/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe -s TCGA-ZG-A8QZ-01 -d ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/ideogram/Ideogram.38.tsv -r ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh38_r85.all.fa -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -m ~/INTEGRATE-Vis-master/example/Example1/simulated.TCGA-ZG-A8QZ-01.bam -o ./panelA -k
 ```
 
 _TCGA-ZG-A8QZ-01.bedpe_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/TCGA_PRAD_333_bedpe/TCGA-ZG-A8QZ-01.bedpe). _Ideogram.38.tsv_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/INTEGRATE-Vis.1.0.0/data/ideogram/Ideogram.38.tsv). _GRCh38\_r85.all.fa_ and _Homo\_sapiens.GRCh38.85.gtf_ can be downloaded and created as shown above in **Input**. The simualted BAM for testing, _simulated.TCGA-ZG-A8QZ-01.bam_ can be found [here](https://github.com/ChrisMaherLab/INTEGRATE-Vis/blob/master/example/Example1/simulated.TCGA-ZG-A8QZ-01.bam).
@@ -430,7 +432,9 @@ Here we are not simulating a whole population of samples in this example, becaus
 
 ### Enjoy!
 
-Additional notes: Due to file size limitation at GitHub, the following files are not uploaded to this repository. All these files can be downloaded or created following the commands above. 
+Additional notes: 
+
+Due to file size limitation at GitHub, the following files are not uploaded to this repository. All these files can be downloaded or created following the commands above. 
 ```sh
 /INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh37_r75.all.fa
 /INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/reference_genome/GRCh38_r85.all.fa
@@ -444,6 +448,3 @@ Please compile the gene fusion evaluator under this directory following the comm
 ```sh
 INTEGRATE-Vis-master/example/Example2/evaluation/build/*
 ```
-
-If you use git clone to get the repository, please INTEGRATE-Vis instead of INTEGRATE-Vis-master in the previous paths. 
-
