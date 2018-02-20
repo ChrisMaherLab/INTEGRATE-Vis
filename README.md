@@ -149,12 +149,12 @@ They can also be created by the python script domain_table.prep.py under the src
 
 ```sh
 $ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/domain_table/
-$ python ~/opt/bin/Integrate-vis.py -version GRCh37 -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh37.75.gtf -out Domain_table.37.tsv
+$ python ~/opt/bin/domain_table.prep.py -version GRCh37 -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh37.75.gtf -out Domain_table.37.tsv
 ```
 and
 ```sh
 $ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/domain_table/
-$ python ~/opt/bin/Integrate-vis.py -version GRCh38 -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -out Domain_table.38.tsv
+$ python ~/opt/bin/domain_table.prep.py -version GRCh38 -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -out Domain_table.38.tsv
 ```
 
 ### Output
