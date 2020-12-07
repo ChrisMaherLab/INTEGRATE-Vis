@@ -34,7 +34,7 @@ if __name__ == '__main__':
               },
               'attributes': ['ensembl_gene_id', 'ensembl_transcript_id', 'interpro_start', 'interpro_end', 'interpro', 'interpro_description']
             })
-            response_interpro = response_interpro.text.rstrip('\n').encode('latin-1').split('\n')
+            response_interpro = response_interpro.text.rstrip('\n').encode('UTF-8').split('\n')
             response_interpro[:] = [line.split('\t') for line in response_interpro]
             response_pfam = human_genes.search({
               'filters': {
