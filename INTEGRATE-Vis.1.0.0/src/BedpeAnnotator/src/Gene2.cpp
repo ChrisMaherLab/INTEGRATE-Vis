@@ -322,7 +322,7 @@ int Gene::isInGene(string chr, uint32_t pos, vector<int>& geneIds) {
 	up--;
 	while(up-genes.begin()>=0 && (*up).chr.compare(chr)==0 && pos > (*up).leftLimit)
 	{
-		if((*up).leftLimit < pos && (*up).rightLimit > pos)
+		if((*up).leftLimit < pos+1 && (*up).rightLimit > pos-1)
 		{
 			geneIds.push_back(up-genes.begin());
 		}
@@ -682,8 +682,11 @@ int Gene::getBestExon3(vector<int> & gids, int pos, int isbkLeft, vector<junctio
 {
 //cout<<"^^^^^^^^^^^^^^^^^^^^^^^^^^ "<<endl;
 int best=getBestDiff2(gids,pos,isbkLeft);
-if(best>1)//////
-  return 0;
+//Allow breaks that do not align perfectly with exon
+//if(best>1)//////
+// return 0;
+if(best>10) //New
+	return 0;
 
 for(int x=0;x<gids.size();x++)
 {

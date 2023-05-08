@@ -7,6 +7,7 @@ import vis_a_structure as pa_wrapper
 import vis_b_domain as pb_wrapper
 import vis_c_exon_exp as pc_wrapper
 import vis_d_gene_exp as pd_wrapper
+import vis_e_fcirc as pe_wrapper
 
 def usage(argv):
     print """
@@ -16,8 +17,9 @@ def usage(argv):
     Integrate-vis domain    <parameters>
     Integrate-vis exon-exp  <parameters>
     Integrate-vis gene-exp  <parameters>
+    Integrate-vis fcircrna     <parameters>
 
-    Version 1.0.0
+    Version 1.1.0
           """
     print "    (A) Parameters for structure:"
     pa_wrapper.main([argv[0]]+["structure"]+argv[1:])
@@ -27,6 +29,9 @@ def usage(argv):
     pc_wrapper.main([argv[0]]+["exon-exp"]+argv[1:])
     print "    (D) Parameters for gene-exp:"
     pd_wrapper.main([argv[0]]+["gene-exp"]+argv[1:])
+    print "    (E) Parameters for fcircrna:"
+    pe_wrapper.main([argv[0]]+["fcircrna"]+argv[1:])
+
 
 def main(argv):
     if len(argv)==1:
@@ -42,6 +47,8 @@ def main(argv):
             pc_wrapper.main(argv)
         elif argv[1]=="gene-exp":
             pd_wrapper.main(argv)
+        elif argv[1]=="fcircrna":
+            pe_wrapper.main(argv)
         else:
             usage(argv[0:1])
 

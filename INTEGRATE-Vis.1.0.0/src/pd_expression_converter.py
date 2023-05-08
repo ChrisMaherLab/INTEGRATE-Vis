@@ -31,7 +31,7 @@ def usage():
         -a/--all-in-one-file            [string:    a tsv file, first column sample names, second column path   ]
                                         [           to expression files                                         ]
 
-    Version:                1.0.0
+    Version:                1.1.0
           """
 
 #parameters

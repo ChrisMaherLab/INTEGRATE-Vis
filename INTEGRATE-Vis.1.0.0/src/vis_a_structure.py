@@ -37,7 +37,7 @@ def usage():
     
         -3/--3-prime        [string:    3' gene partner Id                                     ]
 
-    Version:                1.0.0
+    Version:                1.1.0
           """
 
 #parameters
@@ -371,6 +371,7 @@ def plot_all():
     f.close()
     for x in range(len(all_fusions)):
        #get gene ids
+       print all_fusions[x]
        if is_on_boundary(all_fusions[x]):
            id1,id2='',''
            if all_fusions[x][16]!="NA":
