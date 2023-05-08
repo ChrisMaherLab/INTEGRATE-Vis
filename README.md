@@ -157,6 +157,19 @@ $ cd ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/domain_table/
 $ python ~/opt/bin/domain_table.prep.py -version GRCh38 -g ~/INTEGRATE-Vis-master/INTEGRATE-Vis.1.0.0/data/gene_model/GRCh38.85.gtf -out Domain_table.38.tsv
 ```
 
+**6. fcircRNA files** for describing fcircRNA
+
+These files are only required when using the fcirc util. These can be obtained from the default output of the [INTEGRATE-Circ tool developed by the Maher Lab](https://github.com/ChrisMaherLab/INTEGRATE-Circ). These files have the following format:
+
+ - Column 1: fcircRNA ID
+ - Column 2: Gene fusion, labeled as either geneA--geneB, geneA::geneB or geneA>>geneB
+ - Column 3: Backsplice acceptor position, in chr:pos:strand format (ex: X:123:+)
+ - Column 4: Backsplice donor position, in chr:pos:strand format
+ - Column 5: 5' breakpoint for fusion, in chr:pos:strand format
+ - Column 6: 3' breakpoint for fusion, in chr:pos:strand format
+
+Note that columns 3 and 5 should describe a position within geneA and columns 4 and 6 should describe a position in geneB, given a geneA::geneB fusion. Any header lines should begin with "#".
+
 ### Output
 
 Output files are figures in PDF format. Refer to the examples below for details.  
@@ -429,6 +442,26 @@ Note that you may merge starAligned.out.sort.bam and starChimeric.out.sort.bam t
 **D Gene expression**
 
 Here we are not simulating a whole population of samples in this example, because the current gene fusion read simulation tools are mostly simulating reads independently for different individuals. Therefore, the gene expression in the simulated cohort can be random with out any pattern related to gene fusions, unless the simulation tool takes in gene expression profiles from a real tumor population. For this reason, the (D) gene expression in Example 1 is actually a better data to show how to generate this visualization. 
+
+#### E3. fcircRNA detection and visualization
+
+**Identify fcircRNAs**
+
+For this example, we will use the example data provided in the documentation for [INTEGRATE-Circ](https://github.com/ChrisMaherLab/INTEGRATE-Circ). By following the example provided in that repository, you can produce an fcirc.txt file that contains a simulated fcircRNA derived from a TMPRSS2::ERG fusion. We will use that output file in the following step (a copy of which can be found at example/Example3/example.fcirc.txt).
+
+**Visualize fcircRNAs**
+
+We can visualize the output of INTEGRATE-Circ using the following command:
+```
+python ~/opt/bin/Integrate-vis.py fcirc \
+	-f /output/from/INTEGRATE-Circ/fcirc.txt \
+	-s sample_name \
+	-r /path/to/hg19.fa \
+	-d /path/to/Ideogram.37.tsv \
+	-g /path/to/Homo_sapiens.gtf \
+	-o /example/output/directory 
+```
+The expected output of this command can be found at example/Example3/TMPRSS2-ERG.fcircRNA.1.pdf
 
 ### Enjoy!
 

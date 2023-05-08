@@ -1,0 +1,2 @@
+#Id	FusionName	Fusion5Prime.Backsplice	Fusion3Prime.Backsplice	Fusion5Prime.Breakpoint	Fusion3Prime.Breakpoint
+1	TMPRSS2--ERG	21:42860440:-	21:39764298:-	21:42845252:-	21:39817544:-

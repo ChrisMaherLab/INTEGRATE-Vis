@@ -52,7 +52,7 @@ def usage():
                                      [string:   stop info and shift frame status for different transcripts,
                                      [          a sub line of the annotated bedpe, seperated by space, comma, and '|'   ]
 
-    Version:                         1.0.0
+    Version:                         1.1.0
           """
 
 #parameters

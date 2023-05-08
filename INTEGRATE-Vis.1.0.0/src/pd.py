@@ -35,7 +35,7 @@ def usage():
         -o/--output-dir            [Optional]
                                    [string:   output directory.                                                         ]
 
-    Version:                       1.0.0
+    Version:                       1.1.0
           """
 
 #parameters

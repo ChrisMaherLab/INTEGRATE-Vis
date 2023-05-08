@@ -43,7 +43,7 @@ def usage():
 
         -3/--3-prime        [string:    3' gene partner Id                                     ]
 
-    Version:                1.0.0
+    Version:                1.1.0
           """
 
 #parameters

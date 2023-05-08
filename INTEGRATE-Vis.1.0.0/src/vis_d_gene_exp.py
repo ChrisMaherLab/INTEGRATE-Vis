@@ -35,7 +35,7 @@ def usage():
   
         -r/--range              [number:    max number of range to plot                              ]
 
-    Version:                1.0.0
+    Version:                1.1.0
           """
 
 #parameters

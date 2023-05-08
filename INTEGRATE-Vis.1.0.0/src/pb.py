@@ -42,7 +42,7 @@ def usage():
         -2/--three_p_trans_ID    [Optional]
                                  [string:   3' transcript ID. Only choose this transcrtipt.                         ]
 
-    Version:                     1.0.0
+    Version:                     1.1.0
           """
 
 def rm_quoat(aa):
